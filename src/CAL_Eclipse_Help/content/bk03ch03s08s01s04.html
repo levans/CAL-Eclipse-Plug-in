@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Recursion and the stack</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s08s01.html" title="Evaluation of expressions"><link rel="prev" href="bk03ch03s08s01s03.html" title="Strict parameters"><link rel="next" href="bk03ch03s08s02.html" title="Dynamic typing"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch03s08s01s04.html#N249C7" title="Tail recursive functions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Recursion and the stack</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s08s01s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">Evaluation of expressions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s08s02.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N24923"></a>Recursion and the stack</h4></div></div></div>
+          
+
+          <p>In most languages, each function call requires additional stack space. This means
+          that the number of recursive function calls that can be made by a function in these
+          languages is limited by the size of the stack.</p>
+
+          <p>However, thanks to lazy evaluation, recursive CAL functions often use no more stack
+          than a single function call. For example, consider this definition of a function similar
+          to the <code class="function">List.map</code> function:<div class="informalexample">
+              <pre class="programlisting">/**
+ * 'myMap mapFunction list' applies the function mapFunction to 
+ * each element of the list and returns the resulting list.
+ * 
+ * @arg mapFunction
+ *        a function to be applied to each element of the list.
+ * @arg list
+ *        the list.
+ * @return the list obtained by applying mapFunction to each 
+ * element of the list.
+ */
+myMap :: (a -&gt; b) -&gt; [a] -&gt; [b];
+public myMap mapFunction !list =
+    case list of
+    [] -&gt; [];
+    listHead : listTail -&gt; 
+        mapFunction listHead : myMap mapFunction listTail;
+    ;</pre>
+            </div></p>
+
+          <p>Each call to <code class="function">myMap</code> returns either <code class="function">[]</code> (when
+          the empty list is passed in), or a <code class="function">Cons</code> data constructor whose head
+          is a (not yet evaluated) application of <code class="function">mapFunction</code> to
+          <em class="parameter"><code>listHead</code></em> and whose tail is a (not yet evaluated) application of
+          <code class="function">myMap</code> to <em class="parameter"><code>mapFunction</code></em> and
+          <em class="parameter"><code>listTail</code></em>. In other words, each step of the reduction of an
+          expression involving <code class="function">myMap</code> is a single function call, rather than
+          being a list of nested function calls as it would be in an eager language such as Java or
+          C++.</p>
+
+          <p>There is, however, one class of recursive CAL function that does use additional
+          stack for each recursive call. Any function whose return value is strict (in the sense
+          that it is either a numeric value or a type whose data constructors take strict arguments)
+          may require additional stack for each recursive call.</p>
+
+          <p>Ex:<div class="informalexample">
+              <pre class="programlisting">data MyLazyList a =
+    MyLazyNil |
+    MyLazyCons 
+        head :: a 
+        tail :: (MyLazyList a); 
+data MyStrictList a =
+    MyStrictNil |
+    MyStrictCons 
+        head :: a 
+        tail :: !(MyStrictList a); 
+makeMyLazyList :: [a] -&gt; MyLazyList a;
+makeMyLazyList x =
+    case x of
+    [] -&gt; MyLazyNil;
+    first : rest -&gt; MyLazyCons first (makeMyLazyList rest);
+    ;
+makeMyStrictList :: [a] -&gt; MyStrictList a; 
+makeMyStrictList x =
+    case x of
+    [] -&gt; MyStrictNil;
+    first : rest -&gt; MyStrictCons first (makeMyStrictList rest);
+    ;</pre>
+            </div></p>
+
+          <p>In the example code above, we have defined two types that have the same form as the
+          built-in <code class="type">List</code> type: <code class="type">MyLazyList</code> and <code class="type">MyStrictList</code>.
+          <code class="type">MyLazyList</code> is equivalent to the built-in <code class="type">List</code> type (with the
+          <code class="function">MyLazyNil</code> data constructor corresponding to the
+          <code class="function">Nil</code> data constructor, and the <code class="function">MyLazyCons</code> data
+          constructor corresponding to the <code class="function">Cons</code> data constructor).
+          <code class="type">MyStrictList</code> is equivalent to the built-in <code class="type">List</code> type with one
+          difference: The <em class="parameter"><code>tail</code></em> parameter of <code class="function">MyStrictCons</code>
+          is strict rather than lazy.</p>
+
+          <p>The <code class="function">makeMyStrictList</code> and <code class="function">makeMyLazyList</code>
+          functions convert a regular CAL list into a <code class="type">MyStrictList</code> and
+          <code class="type">MyLazyList</code> respectively. However, one causes a stack overflow when applied to
+          large lists, while the other does not:<div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(makeMyLazyList (upFromTo 0 100000 :: [Int])).MyLazyCons.head</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">0</code></span></p></div>
+            </div><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(makeMyStrictList (upFromTo 0 100000 :: [Int])).MyStrictCons.head</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">The java virtual machine encountered an error.
+Caused by: java.lang.StackOverflowError,  Detail: null
+</code></span></p></div>
+            </div></p>
+
+          <p>The reason that <code class="function">makeMyStrictList</code> requires additional stack for
+          each call is that in order to evaluate the first call, it must evaluate all of the
+          recursive calls as well (since the strict <em class="parameter"><code>tail</code></em> parameter requires
+          the recursive call to be reduced to WHNF before the <code class="type">MyStrictCons</code> value can be
+          constructed). By contrast, <code class="function">makeMyLazyList</code> can construct and return
+          the <code class="type">MyLazyCons</code> value without having to make a recursive call. The recursive
+          call will happen if and when the value of <em class="parameter"><code>tail</code></em> is requested.</p>
+
+          <div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="N249C7"></a>Tail recursive functions</h5></div></div></div>
+            
+
+            <p>Even recursive functions that must return strict values can be written to require
+            only constant stack, so long as they are tail recursive.</p>
+
+            <p>A tail recursive function is a recursive function where the recursive call (or
+            calls) is in tail position. A function call is in tail position if the result of the
+            function call is returned directly:<div class="informalexample">
+                <pre class="programlisting">sumIntList1 :: [Integer] -&gt; Integer;
+sumIntList1 numList =
+    case numList of
+    [] -&gt; 0;
+    first : rest -&gt; first + sumIntList1 rest;
+    ;
+sumIntList2 :: [Integer] -&gt; Integer -&gt; Integer;
+sumIntList2 numList accum =
+    case numList of
+    [] -&gt; accum;
+    first : rest -&gt; sumIntList2 rest (accum + first);
+    ;</pre>
+              </div></p>
+
+            <p>In the above code, the recursive call to <code class="function">sumIntList2</code> is in
+            tail position, because the result from <code class="function">sumIntList2</code> is returned
+            directly without any additional processing.</p>
+
+            <p>In contrast, the recursive call to <code class="function">sumIntList1</code> is
+            <span class="emphasis"><em>not</em></span> in tail position, because the result from the call to
+            <code class="function">sumIntList1</code> is passed as an argument to the addition operator
+            rather than being returned directly. The addition operator is in tail position in
+            sumIntList1 rather than the recursive call.</p>
+
+            <p>Although <code class="function">sumIntList2</code> does not use extra stack at each
+            recursive invocation, it is still not ideal. Its <em class="parameter"><code>accum</code></em> parameter
+            is lazily evaluated. This means that an invocation such as <code class="code">sumIntList2 [5,6,7,8]
+            0</code> would reduce as follows:<div class="literallayout"><p><span style="white-space: pre;"><code class="code">sumIntList2 [5, 6, 7, 8] 0
+sumIntList2 [6, 7, 8] (5 + 0)
+sumIntList2 [7, 8] (6 + (5 + 0))
+sumIntList2 [8] (7 + (6 + (5 + 0)))
+sumIntList2 [] (8 + (7 + (6 + (5 + 0))))
+(8 + (7 + (6 + (0 + 5))))</code></span></p></div></p>
+
+            <p>Although the recursive invocations of <code class="function">sumIntList2</code> took no
+            extra stack, the invocations of the addition operator to evaluate
+            <em class="parameter"><code>accum</code></em> at the end of the recursion will require enough stack to
+            make <span class="formula">n</span> calls (where the input list had n elements). This
+            means that the tail-recursive <code class="function">sumIntList2</code> can still overflow the
+            stack for sufficiently large inputs!</p>
+
+            <p>Fortunately, by making the <em class="parameter"><code>accum</code></em> parameter strict, we can
+            force each addition to be evaluated at the time of the recursive call. This eliminates
+            the need to evaluate a large, nested addition at the end of the
+            recursion.<div class="informalexample">
+                <pre class="programlisting">sumIntList3 :: [Integer] -&gt; Integer -&gt; Integer;
+sumIntList3 numList !accum =
+    case numList of
+    [] -&gt; accum;
+    first : rest -&gt; sumIntList3 rest (accum + first);
+    ;</pre>
+              </div></p>
+
+            <p><code class="function">sumIntList3</code> is identical to <code class="function">sumIntList2</code>,
+            except that its accumulator argument is flagged as strict. This forces its
+            <em class="parameter"><code>accum</code></em> argument to be reduced before each recursive
+            application:<div class="literallayout"><p><span style="white-space: pre;"><code class="code">sumIntList3 [5, 6, 7, 8] 0
+sumIntList3 [6, 7, 8] (5 + 0)
+sumIntList3 [6, 7, 8] 5
+sumIntList3 [7, 8] (6 + 5)
+sumIntList3 [7, 8] 11
+sumIntList3 [8] (7 + 11)
+sumIntList3 [8] 18
+sumIntList3 [] (8 + 18)
+sumIntList3 [] 26
+26</code></span></p></div></p>
+
+            <p>Note that at each stage of reduction, the value of accum is always an expression
+            with 0 or 1 addition operations. Unlike the previous two sum functions, this strict
+            tail-recursive version can be called with a list of any size without overflowing the
+            stack:<div class="informalexample">
+                <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>sumIntList1 (upFromTo 0 5000)</code></strong>
+<span class="bold-italic">Error</span> <code class="computeroutput">while executing: The java virtual machine encountered an error.
+Caused by: java.lang.StackOverflowError,  Detail: null</code></span></p></div>
+              </div><div class="informalexample">
+                <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>sumIntList2 (upFromTo 0 5000) 0</code></strong>
+<span class="bold-italic">Error</span> <code class="computeroutput">while executing: The java virtual machine encountered an error.
+Caused by: java.lang.StackOverflowError,  Detail: null</code></span></p></div>
+              </div><div class="informalexample">
+                <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>sumIntList3 (upFromTo 0 20000) 0</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">200010000</code></span></p></div>
+              </div><div class="informalexample">
+                <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>sumIntList3 (upFromTo 0 100000) 0</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">5000050000</code></span></p></div>
+              </div></p>
+          </div>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s08s01s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s08s01.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s08s02.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Strict parameters&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Dynamic typing</td></tr></table></div></body></html>

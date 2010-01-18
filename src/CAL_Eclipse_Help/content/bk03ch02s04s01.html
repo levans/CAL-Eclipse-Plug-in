@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Case expressions, part 2</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch02s04.html" title="User-defined types"><link rel="prev" href="bk03ch02s04.html" title="User-defined types"><link rel="next" href="bk03ch02s05.html" title="Accessing CALDoc information"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Case expressions, part 2</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch02s04.html">Prev</a>&nbsp;</td><th align="center" width="60%">User-defined types</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch02s05.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N220D6"></a>Case expressions, part 2</h3></div></div></div>
+        
+
+        <p>As with lists and tuples, the components of user-defined data structures are accessed
+        using case expressions. Patterns based on the data constructors for a type can be used to
+        unpackage the components of an instance of a user-defined type:<div class="informalexample">
+            <pre class="programlisting">maybeToList :: Maybe a -&gt; [a];
+public maybeToList m =
+    case m of
+    Nothing -&gt; [];
+    Just value  -&gt; [value];
+    ;</pre>
+          </div></p>
+
+        <p>The above code converts any value of type <code class="type">Maybe a</code> (for some type
+        <code class="type">a</code>) into a list of elements of type <code class="type">a</code>. If the value passed in is
+        <code class="function">Nothing</code>, then the list is empty. If the value passed in is
+        <em class="parameter"><code>Just x</code></em> (for some value <em class="parameter"><code>x</code></em>), then the list will
+        be a single-element list whose only element is <em class="parameter"><code>x</code></em>. With the above
+        definition, we can evaluate the following expressions:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>maybeToList (Just 'c')</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">['c']</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>maybeToList (Nothing :: Maybe Int)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">[]</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>maybeToList (Just 12.2)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">[12.2]</code>
+</span></p></div>
+          </div></p>
+
+        <p>If only certain components in a user-defined type are required, an alternative syntax
+        may be used specifying only the required components:<div class="informalexample">
+            <pre class="programlisting">data public TripleType a b c =
+    public TripleDC
+        field1 :: a
+        field2 :: b
+        field3 :: c;
+public addFirstAndThird tripleType =
+    case tripleType of
+    TripleDC {field1, field3} -&gt; field1 + field3; 
+    ;</pre>
+          </div></p>
+
+        <p>The <code class="function">addFirstAndThird</code> function returns the sum of the values of
+        the <em class="parameter"><code>field1</code></em> and <em class="parameter"><code>field3</code></em> arguments from a
+        <code class="type">TripleType</code> data value.<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>addFirstAndThird (TripleDC 2.0 "String" 3.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">5.0</code>
+</span></p></div>
+          </div></p>
+
+        <p>There are times when we don't want to specify all possible alternatives in a case
+        expression. In these instances, we can use a default pattern (the underscore) to match all
+        of the alternatives that are not explicitly specified:<div class="informalexample">
+            <pre class="programlisting">pointGreaterThan :: Num a =&gt; (a, a) -&gt; (a, a) -&gt; Boolean;
+pointGreaterThan p1 p2 =
+    case comparePoints p1 p2 of
+    MyGT -&gt; True;
+    _ -&gt; False;
+    ;</pre>
+          </div></p>
+
+        <p>For the purposes of <code class="function">pointGreaterThan</code>, all that matters is whether
+        <code class="function">comparePoints</code> returns <code class="function">MyGT</code>. If it does not, then
+        it doesn't matter whether it returned <code class="function">MyLT</code> or
+        <code class="function">MyEQ</code>. So rather than specify separate patterns for
+        <code class="function">MyLT</code> and <code class="function">MyEQ</code>, the above definition provides only
+        two patterns: One for <code class="function">MyGT</code>, and one for everything else.</p>
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch02s04.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch02s04.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch02s05.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">User-defined types&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Accessing CALDoc information</td></tr></table></div></body></html>

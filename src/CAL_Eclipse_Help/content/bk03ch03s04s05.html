@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Type class definitions</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s04.html" title="Definitions and declarations"><link rel="prev" href="bk03ch03s04s04s08.html" title="Foreign function definitions for Java array operations"><link rel="next" href="bk03ch03s04s05s01.html" title="Constrained class methods"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch03s04s05s01.html" title="Constrained class methods"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Type class definitions</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s04s04s08.html">Prev</a>&nbsp;</td><th align="center" width="60%">Definitions and declarations</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s04s05s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N23DB2"></a>Type class definitions</h3></div></div></div>
+        
+
+        <p>A type class is a group of types that all provide some set of operations. (See <a href="bk03ch04s02.html#TypeClasses">the section called &ldquo;Type classes&rdquo;</a> for details of type classes). Type classes are defined using the
+        <code class="code">class</code> keyword. Class definitions take the following form: <pre class="synopsis">[<em class="replaceable"><code>visibility</code></em>] class <em class="replaceable"><code>class_name</code></em> <em class="replaceable"><code>class_variable</code></em> where
+    [<em class="replaceable"><code>visibility</code></em>] <em class="replaceable"><code>method_name</code></em> :: <em class="replaceable"><code>method_type</code></em>
+        [default <em class="replaceable"><code>default_implementation_function_name</code></em>];
+    [[<em class="replaceable"><code>visibility</code></em>] <em class="replaceable"><code>method_name</code></em> :: <em class="replaceable"><code>method_type</code></em>
+        [default <em class="replaceable"><code>default_implementation_function_name</code></em>]; ...]
+    ;</pre></p>
+
+        <p>Like types, type classes can be defined as being either <code class="modifier">public</code>,
+        <code class="modifier">protected</code>, or <code class="modifier">private</code> to a module. The name of a
+        type class is an identifier starting with an uppercase letter. Like types, the visibility
+        specification is optional; if it is omitted, then the class defaults to being
+        <code class="modifier">private</code>. The class declaration is followed by a list of one or more
+        method declarations. Each method must specify its type and can be declared as being either
+        <code class="modifier">public</code> or <code class="modifier">private</code> (with
+        <code class="modifier">private</code> being the default). Each method may also specify a default
+        implementation.</p>
+
+        <p><div class="informalexample">
+            <pre class="programlisting">public class MyAppendable a where    
+    public myEmpty :: a;    
+    public myIsEmpty :: a -&gt; Boolean;
+    public myAppend :: a -&gt; a -&gt; a; 
+    public myConcat :: [a] -&gt; a
+        default myConcatDefault;
+    ;</pre>
+          </div></p>
+
+        <p>In the above example, a type <code class="type">a</code> can be a member of the type class
+        <code class="classname">MyAppendable</code> only if it specifies a public
+        <code class="methodname">myEmpty</code> method that returns a value of type <code class="type">a</code>, a
+        public <code class="methodname">myIsEmpty</code> method that accepts a value of type <code class="type">a</code>
+        and returns a <code class="type">Boolean</code>, a public <code class="methodname">myAppend</code> method that
+        accepts two values of type <code class="type">a</code> and returns a value of type <code class="type">a</code>, and a
+        public <code class="methodname">myConcat</code> method that accepts a list of elements of type
+        <code class="type">a</code> and returns a value of type a.</p>
+
+        <p>The <code class="methodname">myConcat</code> method, which concatenates a list of values of
+        type <code class="type">a</code>, can be implemented using the methods <code class="methodname">myAppend</code>
+        and <code class="methodname">myEmpty</code>. Thus, a default implementation can be specified, in
+        this case through the function <code class="function">myConcatDefault</code>:<div class="informalexample">
+            <pre class="programlisting">myConcatDefault :: MyAppendable a =&gt; [a] -&gt; a;
+private myConcatDefault = List.foldRight myAppend myEmpty;</pre>
+          </div></p>
+
+        
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s04s04s08.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s04.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s04s05s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Foreign function definitions for Java array operations&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Constrained class methods</td></tr></table></div></body></html>

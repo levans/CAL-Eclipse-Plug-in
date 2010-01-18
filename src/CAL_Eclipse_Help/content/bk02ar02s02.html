@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>How are expressions in CAL evaluated?</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar02.html" title="Effective CAL"><link rel="prev" href="bk02ar02s01.html" title="What is Weak Head Normal Form and why is it useful?"><link rel="next" href="bk02ar02s03.html" title="What is the seq function and what is it good for?"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">How are expressions in CAL evaluated?</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar02s01.html">Prev</a>&nbsp;</td><th align="center" width="60%">Effective CAL</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar02s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N210CC"></a>How are expressions in CAL evaluated?</h2></div></div></div>
+    
+
+    <p>To evaluate an expression in CAL means to evaluate an expression to weak-head normal form
+    or WHNF. CAL will always stop at that point, and allow clients, such as an enclosing context, to
+    determine what to do next.</p>
+
+    <p>This may seem surprising because of the behavior of ICE.</p>
+
+    <p>For example, if on the ICE command line you type the following expression, which is
+    already in WHNF:</p>
+
+    <p>
+      <strong class="userinput"><code>Just (2.0 + 3.0)</code></strong>
+    </p>
+
+    <p>ICE returns:</p>
+
+    <pre class="screen"><code class="computeroutput">(Prelude.Just 7.0)</code></pre>
+
+    <p>The reason for this is that expressions on the ICE command line are automatically prefixed
+    by Prelude.output to convert them to a Java object. What is really being run is
+    <code class="code">Prelude.output (Just (2.0 + 3.0)) :: JObject</code></p>
+
+    <p>The behavior of the output class method on the Maybe Double type is defined by the
+    Outputable Maybe and Outputable Double instances. In this case they will output to a java value
+    of type org.openquark.cal.foreignsupport.module.Prelude.MaybeValue. This Java object then has
+    the toString() Java method called on it which produces the output above.</p>
+
+    <p>To evaluate a case expression, <code class="code">case conditionExpr of ...</code>, the
+    <code class="code">conditionExpr</code> is evaluated to WHNF. <code class="code">conditionExpr</code> will then be either
+    a data constructor application, a literal Int, a literal Char, or a record value. At this point,
+    CAL can decide which branch of the case expression to follow, and it evaluates that branch to
+    WHNF. Note that even if the case expression has only 1 branch, the conditionExpr will first be
+    evaluated to WHNF.</p>
+
+    <p><pre class="screen">case (Just (2.0 + 7.0)) of Nothing -&gt; "bad"; Just x -&gt; "good";</pre>returns
+    "<code class="computeroutput">good</code>", without ever evaluating 2.0 + 7.0, since <code class="code">Just
+    (2.0 + 7.0)</code> is already in WHNF.</p>
+
+    <p>How can we tell that 2.0 + 7.0 is not evaluated? The main techniques here involves using
+    the trace, error and seq functions to modify the expression such that a failure of some sort
+    (either a message to the console when using trace, or terminating execution using error) is
+    triggered if the offending expression is evaluated. For example, the following expressions typed
+    into the ICE console also just return "<code class="computeroutput">good</code>", without logging a
+    message or an exception: <div class="informalexample">
+        <pre class="screen">case (Just (trace "we have a problem" (2.0 + 7.0))) of Nothing -&gt; "bad"; Just x -&gt; "good";</pre>
+      </div> <div class="informalexample">
+        <pre class="screen">case (Just (error "we have a problem" `seq` (2.0 + 7.0))) of Nothing -&gt; "bad"; Just x -&gt; "good";</pre>
+      </div></p>
+
+    <p>You can alter the original expression in a variety of ways. These still return
+    "<code class="computeroutput">good</code>":<div class="informalexample">
+        <pre class="screen">case (Just (error "we have a problem")) of Nothing -&gt; "bad"; Just x -&gt; "good";</pre>
+      </div><div class="informalexample">
+        <pre class="screen">case (Just ((error "we have a problem") + 7.0)) of Nothing -&gt; "bad"; Just x -&gt; "good";</pre>
+      </div></p>
+
+    <p>As mentioned above, even if the case expression has only one branch, the conditionExpr is
+    still evaluated. You can see this in ICE for example with the expression:<pre class="screen">case (error "will stop here") of {name, age} -&gt; "hello";</pre>This
+    will terminate in an error displaying the message "<code class="computeroutput">will stop
+    here</code>".</p>
+
+    <p>Evaluating an if-then-else expression is similar to evaluating a case-expression. The
+    conditionExpr is evaluated to WHNF. Since the conditionExpr in an if-then-else has type Boolean,
+    this must be either the value True or False. Then the appropriate branch is selected, and
+    evaluated to WHNF.</p>
+
+    <p>In the functional programming literature, the evaluation algorithm of CAL is said to
+    evaluate expressions in <span class="emphasis"><em>leftmost-outermost</em></span> order. What this means is that,
+    first of all, outermost expressions are evaluated prior to inner expressions being evaluated.
+    For example, in expressions such as "f expr1 (g expr2)", the application of f to the 2 arguments
+    expr1 and (g expr2) is performed prior to the application of g to its argument expr2. The
+    leftmost order means that for a function application (f expr1 expr2), expr1 is evaluated prior
+    to expr2 i.e. in left-to-right order. This is true for many functions, for example, all foreign
+    functions evaluate their arguments to WHNF in left-to-right order. However, it is not true in
+    general of all CAL functions, but rather it is a property of the individual function f.</p>
+
+    <p>For example, the function <pre class="screen">f x y = "hello";</pre> will not evaluate either of
+    its arguments to WHNF, since it ignores its arguments.</p>
+
+    <p>The function <pre class="screen">f :: Int -&gt; Int -&gt; Int;
+f x y = y - x;</pre> will evaluate y to WHNF first, followed by evaluating x to WHNF.</p>
+
+    <p>The function <pre class="screen">iff :: Boolean -&gt; a -&gt; a -&gt; a;
+iff b x y = if b then x else y;</pre> will evaluate b to WHNF first, followed by evaluating x to
+    WHNF if b is TRUE and y to WHNF if b is false.</p>
+
+    <p>So for example, both expressions below return "<code class="computeroutput">OK</code>":
+    <pre class="screen">iff True "OK" (error "we have a problem")</pre> <pre class="screen">iff False (error "we have a problem") "OK"</pre></p>
+
+    <p>Evaluating an application expression first evaluates the left-hand-side of the application
+    to WHNF, and then attempts to apply the resulting function. For example, the application<pre class="screen">expr1 expr2 expr3</pre>with
+    parentheses inserted to account for the left ascociativity of application is: <pre class="screen">(expr1 expr2) expr3</pre></p>
+
+    <p>So to evaluate this, we first must evaluate (expr1 expr2) to WHNF, which means first
+    evaluating expr1 to WHNF.</p>
+
+    <p>For example,<pre class="screen">(head [power]) (1.0 + 1.0) (2.0 + 1.0)</pre>will first evaluate
+    (head [power]) to WHNF getting <pre class="screen">power</pre></p>
+
+    <p>It will then evaluate "power (1.0 + 1.0)" to WHNF. This is already in WHNF since power is
+    a function that takes 2 arguments, and only 1 is supplied. So it now can apply the function
+    power on its 2 arguments, power (1.0 + 1.0) (2.0 + 1.0). Since power is a foreign function, the
+    arguments are evaluated to WHNF in left-to-right order:<pre class="screen">power 2.0 (2.0 + 1.0)
+power 2.0 3.0
+8.0</pre></p>
+
+    <p>Here is another example of reducing applications:<pre class="screen">(head [fst]) (cos, sin) (5.0 - 5.0)
+//fst is in WHNF, but fst (cos, sin) is not
+//so we reduce this first.
+fst (cos, sin) (5.0 - 5.0) 
+cos (5.0 - 5.0)
+cos 0.0
+1.0</pre></p>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar02s01.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar02s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">What is Weak Head Normal Form and why is it useful?&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;What is the seq function and what is it good for?</td></tr></table></div></body></html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>The seq function</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s08s01.html" title="Evaluation of expressions"><link rel="prev" href="bk03ch03s08s01s01.html" title="Infinite data structures"><link rel="next" href="bk03ch03s08s01s03.html" title="Strict parameters"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">The <code class="function">seq</code> function</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s08s01s01.html">Prev</a>&nbsp;</td><th align="center" width="60%">Evaluation of expressions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s08s01s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N24863"></a>The <code class="function">seq</code> function</h4></div></div></div>
+          
+
+          <p>There are some situations where lazy evaluation is undesirable. Strict evaluation
+          can be both faster and more space-efficient than lazy evaluation for non-shared values
+          that are actually evaluated.</p>
+
+          <p>For situations where this is known to be the case, CAL provides the ability to force
+          the order in which expressions will be reduced. One way to do this is by using the
+          <code class="function">seq</code> function. The <code class="function">seq</code> function takes two
+          arguments. It forces the first argument to be reduced until it is in "Weak Head Normal
+          Form"; then it returns the value of the second argument.</p>
+
+          <p>For algebraic types (i.e., lists, records, tuples, and user-defined types), Weak
+          Head Normal Form is the point where the outermost data constructor for the value is known.
+          For numeric types (<code class="type">Double</code>, <code class="type">Int</code>, <span class="foreignphrase"><em class="foreignphrase">et
+          al</em></span>), Weak Head Normal Form is the point at which the numeric value of the
+          expression is known. <sup>[<a href="#ftn.N24882" name="N24882">4</a>]</sup></p>
+
+          <p>Note the distinction between "evaluated until WHNF" and "evaluated completely".
+          Lists are evaluated only until the outermost data constructor is known (i.e., until it is
+          known whether the list is empty or not). This means that it is still possible to force the
+          evaluation of infinite lists using <code class="function">seq</code> without causing an infinite
+          loop.</p>
+
+          <p>As an example of the effect of the seq function, consider the following two
+          definitions:<pre class="programlisting">cons :: a -&gt; [a] -&gt; [a];
+cons x y = x : y;</pre><pre class="programlisting">strictCons :: a -&gt; [a] -&gt; [a];
+strictCons x y = seq y (x : y);</pre></p>
+
+          <p>Both <code class="function">cons</code> and <code class="function">strictCons</code> return a list
+          containing the first argument followed by the elements of the second argument. However,
+          their reductions look quite different. Here is the reduction of <code class="function">cons
+          (myFactorial 3) (cons (3 + 4) [8, 9])</code>:<div class="literallayout"><p><span style="white-space: pre;"><code class="code">cons (myFactorial 3) (cons (3 + 4) [8, 9])
+(myFactorial 3) : (cons (3 + 4) [8, 9])
+(3 * (myFactorial (3 - 1)) : (cons (3 + 4) [8, 9])
+(3 * (myFactorial 2) : (cons (3 + 4) [8, 9])
+(3 * 2 * (myFactorial (2 - 1)) : (cons (3 + 4) [8, 9])
+(6 * (myFactorial (2 - 1)) : (cons (3 + 4) [8, 9])
+(6 * (myFactorial 1)) : (cons (3 + 4) [8, 9])
+(6 * 1 * (myFactorial (1 - 1))) : (cons (3 + 4) [8, 9])
+(6 * (myFactorial (1 - 1))) : (cons (3 + 4) [8, 9]) 
+(6 * (myFactorial 0)) : (cons (3 + 4) [8, 9])
+(6 * 1) : (cons (3 + 4) [8, 9])
+6 : (cons (3 + 4) [8, 9])
+6 : ((3 + 4) : [8, 9])
+6 : (7 : [8, 9])
+[6, 7, 8, 9]</code><sup>[<a href="#ftn.SeqClarityRewriteFootnote" name="SeqClarityRewriteFootnote">5</a>]</sup></span></p></div></p>
+
+          <p>Compare this with the reduction of the equivalently-valued <code class="code">strictCons
+          (myFactorial 3) (strictCons (3 + 4) [8, 9])</code>: <div class="literallayout"><p><span style="white-space: pre;"><code class="code">strictCons (myFactorial 3) (strictCons (3 + 4) [8, 9])
+strictCons (myFactorial 3) ((3 + 4) : [8, 9])
+strictCons (myFactorial 3) (7 : [8, 9])
+strictCons (myFactorial 3) [7, 8, 9]</code><sup>[<a href="#ftn.SeqClarityRewriteFootnote">5</a>]</sup><code class="code">
+(myFactorial 3) : [7, 8, 9]
+(3 * myFactorial (3 - 1)) : [7, 8, 9]
+(3 * myFactorial 2) : [7, 8, 9]
+(3 * 2 * myFactorial (2 - 1)) : [7, 8, 9]
+(6 * myFactorial (2 - 1)) : [7, 8, 9]
+(6 * myFactorial 1) : [7, 8, 9]
+(6 * 1 * myFactorial (1 - 1)) : [7, 8, 9]
+(6 * myFactorial (1 - 1)) : [7, 8, 9]
+(6 * myFactorial 0) : [7, 8, 9]
+(6 * 1) : [7, 8, 9]
+6 : [7, 8, 9]
+[6, 7, 8, 9]</code><sup>[<a href="#ftn.SeqClarityRewriteFootnote">5</a>]</sup></span></p></div></p>
+
+          <p>Note that <code class="function">strictCons</code>'s use of the <code class="function">seq</code>
+          function forces its second argument (in this case, <code class="code">(strictCons (3 + 4) [8,
+          9])</code>) to be reduced before its first argument (<code class="code">myFactorial 3</code>).</p>
+        <div class="footnotes"><br><hr align="left" width="100"><div class="footnote">
+              <p><sup>[<a href="#N24882" name="ftn.N24882">4</a>] </sup>One can think of a numeric type as an algebraic type with an infinite number of
+              data constructors. e.g., one can think of the <code class="type">Integer</code> type as being
+              defined by <code class="code">data public Integer = 0 | 1 | 2 | 3 | ...</code>. When one thinks of
+              numeric types in this way, then the two definitions of Weak Head Normal Form are
+              equivalent.</p>
+            </div><div class="footnote">
+                <p><sup>[<a href="#SeqClarityRewriteFootnote" name="ftn.SeqClarityRewriteFootnote">5</a>] </sup>This step is just a rewrite for clarity, not a reduction. <code class="code">
+e.g. [6, 7, 8, 9]</code> is a shorthand notation for <code class="code">6 : (7 : (8 : ( 9 : [])))</code>
+</p>
+              </div></div></div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s08s01s01.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s08s01.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s08s01s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Infinite data structures&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Strict parameters</td></tr></table></div></body></html>

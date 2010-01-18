@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Higher-kinded type variables</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s03.html" title="Types"><link rel="prev" href="bk03ch03s03s06s02.html" title="Lacks constraints"><link rel="next" href="bk03ch03s04.html" title="Definitions and declarations"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Higher-kinded type variables</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s03s06s02.html">Prev</a>&nbsp;</td><th align="center" width="60%">Types</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s04.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N23830"></a>Higher-kinded type variables</h3></div></div></div>
+        
+
+        <p>CAL supports the use of <em class="firstterm">higher-kinded</em> type variables. Whereas a
+        regular type variable is a variable which stands for a <span class="emphasis"><em>type</em></span>, a
+        higher-kinded type variable is a variable which stands for a <span class="emphasis"><em>type
+        constructor</em></span>. For example, one may define a functor type class as:<div class="informalexample">
+            <pre class="programlisting">public class Functor f where
+    public map :: (a -&gt; b) -&gt; f a -&gt; f b;
+    ;</pre>
+          </div></p>
+
+        <p>In the above declaration, the variable f is a higher-kinded type variable standing for
+        a type constructor with one type parameter. The type declaration of the
+        <code class="function">map</code> method tells us that it is a method which takes a function (of type
+        <code class="type">a -&gt; b</code>) and a value of type <code class="type">(f a)</code>, and returns a value of type
+        <code class="type">(f b)</code>.</p>
+
+        <p>The type constructor for the standard type <code class="type">Maybe</code> fits the requirement of
+        a type constructor with one type parameter, and thus we may define a <code class="type">Functor</code>
+        instance for <code class="type">Maybe</code>:<div class="informalexample">
+            <pre class="programlisting">instance Functor Maybe where
+    map = mapMaybe;
+    ;
+mapMaybe :: (a -&gt; b) -&gt; (Maybe a -&gt; Maybe b);
+private mapMaybe mappingFunction !maybeValue =
+    case maybeValue of
+    Nothing -&gt; Nothing;
+    Just {value} -&gt; Just (mappingFunction value);
+    ;</pre>
+          </div></p>
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s03s06s02.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s03.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s04.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Lacks constraints&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Definitions and declarations</td></tr></table></div></body></html>

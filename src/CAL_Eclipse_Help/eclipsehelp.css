@@ -1,0 +1,93 @@
+/*
+ * Copyright (c) 2007 BUSINESS OBJECTS SOFTWARE LIMITED
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *  
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *  
+ *     * Neither the name of Business Objects nor the names of its contributors
+ *       may be used to endorse or promote products derived from this software
+ *       without specific prior written permission.
+ *  
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * eclipsehelp.css
+ * Creation date: Jun 1, 2007.
+ * By: Edward Lam
+ */
+/* Italicize formulas. */
+.formula {
+	font-style: italic
+}
+
+/*
+  CAL syntax coloring.
+  (within programlisting elements)
+  Keep this in sync with quark-docbook.xsl
+ */
+.cal-keyword {color: rgb(127,0,85)}
+.cal-operator {font-weight: bold}
+.cal-string {color: rgb(42,0,255)}
+.cal-caldoc {color: rgb(63,95,191)}
+.cal-caldoctag {color: rgb(127,127,159)}
+.cal-comment {color: rgb(63,127,95)}
+
+/* Figure image and text are centre-aligned. */
+div.figure {text-align: center}
+
+/* emphasis, role="smallcaps" */
+.smallcaps {
+	font-variant: small-caps;
+}
+
+/* emphasis, role="bold-italic" */
+.bold-italic {
+	font-weight: bold;
+	font-style: italic
+}
+
+/* Compact spacing for lists which aren't top-level. */
+li li {
+  margin-top: -1em
+}
+
+/* In IE if a list item ends with an image, the previous rule will cause 
+   the following list item to overlap the bottom 1em of the image
+   unless we re-adjust like so. 
+   Note that this rule will add extra space to the bottom of all images,
+   not just the ones which end the list item.
+   */
+li li img {
+  margin-bottom: 1em
+}
+
+/*
+   However for lists enclosed within other lists, where a <p> start a list item, 
+   the previous only applies for 
+    <p> <ul> <li> ... </li> </ul> </p>
+   Not for
+    <p>...</p> <ul> <li> ... </li> </ul>
+   
+   To work around, always apply a margin to <p> within a list item.
+ */
+li p {
+  margin-top: 1em
+}

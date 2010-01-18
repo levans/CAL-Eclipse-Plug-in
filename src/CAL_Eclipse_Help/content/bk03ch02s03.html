@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Functions</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="prev" href="bk03ch02s02s04.html" title="Case expressions, part 1"><link rel="next" href="bk03ch02s03s01.html" title="Type class constraints"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch02s03s01.html" title="Type class constraints"><link rel="subsection" href="bk03ch02s03s02.html" title="Higher-order functions"><link rel="subsection" href="bk03ch02s03s03.html" title="Defining functions"><link rel="subsection" href="bk03ch02s03s04.html" title="Lambda expressions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Functions</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch02s02s04.html">Prev</a>&nbsp;</td><th align="center" width="60%">Chapter&nbsp;2.&nbsp;Getting Started with CAL</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch02s03s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N21B59"></a>Functions</h2></div></div></div>
+      
+
+      <p>A function is an operation that takes some number of values (possibly zero), and returns
+      another, possibly different value. For example, the <code class="function">max</code> function takes
+      two arguments and returns the largest of the two:<div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>max 1.5 0.3</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">1.5</code>
+</span></p></div>
+        </div></p>
+
+      <p>Note that function applications are a kind of expression. They must always produce a
+      value, and their types must be consistent.</p>
+
+      <p>The <code class="function">id</code> function takes a single value and returns an identical
+      value:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>id "ahoy"</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">"ahoy"</code>
+</span></p></div>
+      </div>
+
+      <p>The <code class="function">head</code> functions takes a single list value and returns the first
+      element of the list:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>head ["top", "middle", "bottom"]</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">"top"</code>
+</span></p></div>
+      </div>
+
+      <p>The <code class="function">pi</code> function takes no arguments and returns a Double value that
+      approximates the value of pi:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>pi</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">3.141592653589793</code>
+</span></p></div>
+      </div>
+
+      <p>The <code class="function">isEven</code> function takes an <code class="type">Int</code> argument and returns
+      a <code class="type">Boolean</code> indicating whether it is even (<code class="function">True</code>) or odd
+      (<code class="function">False</code>):</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>isEven 9</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">False</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>isEven 10</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">True</code>
+</span></p></div>
+      </div>
+
+      <p>The <code class="function">power</code> function takes two <code class="type">Double</code> arguments and
+      raises the first argument to an exponent specified by the second argument, returning another
+      <code class="type">Double</code>:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>power 2 0.5</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">1.4142135623730951</code>
+</span></p></div>
+      </div>
+
+      <p>The arguments to a function need not all be of the same type. For example, the
+      <code class="function">subscript</code> function in the <code class="classname">String</code> module accepts a
+      <code class="type">String</code> and an <code class="type">Int</code> specifying an index into the <code class="type">String</code>,
+      and returns the <code class="type">Char</code> at the specified index:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>String.subscript "a modern Major-General" 9</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">'M'</code>
+</span></p></div>
+      </div>
+
+      <p>In CAL, functions themselves are values. Like all other values, they have a type:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t pi</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">Double</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t isEven</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">Int -&gt; Boolean</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t power</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">Double -&gt; Double -&gt; Double</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t String.subscript</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">String -&gt; Int -&gt; Char</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t id</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">a -&gt; a</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t head</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">[a] -&gt; a</code>
+</span></p></div>
+      </div>
+
+      <p>The first type signature is familiar; <code class="function">pi</code> returns a value of type
+      <code class="type">Double</code>.</p>
+
+      <p>The second type signature contains a new element: It includes an arrow (<code class="function">-&gt;</code>). The arrow indicates a function with arguments. The type
+      signature <code class="type">Int -&gt; Boolean</code> specifies the type of a function that accepts a
+      single <code class="type">Int</code> argument and returns a <code class="type">Boolean</code> value.</p>
+
+      <p>The type of functions that return multiple values are specified by listing the types of
+      the arguments in order and separated by arrows, followed by another arrow and the type of the
+      return value. So the type signature of <code class="function">power</code> (<code class="type">Double -&gt; Double
+      -&gt; Double</code>) represents the type of a function that accepts two <code class="type">Double</code>
+      arguments and returns another <code class="type">Double</code> value, and the type signature of
+      <code class="function">String.subscript</code> (<code class="type">String -&gt; Int -&gt; Char</code>) represents
+      the type of a function that accepts a <code class="type">String</code> and an <code class="type">Int</code> and returns
+      a <code class="type">Char</code>.</p>
+
+      <p>The fifth signature (for the <code class="function">id</code> function) has another new element:
+      it refers to an unfamiliar type <code class="type">a</code>.</p>
+
+      <p>The type signature <code class="type">a -&gt; a</code> specifies the type of a function that accepts
+      a value of type <code class="type">a</code> and returns another value of the same type <code class="type">a</code>, for
+      some type <code class="type">a</code>. The identifier <code class="varname">a</code> is a <em class="firstterm">type
+      variable</em>; it can be bound to any type. Note that it can only be bound to a single
+      type within a given type signature.</p>
+
+      <p>What this means is that we can pass an argument of any type at all to
+      <code class="function">id</code>, and it will return a value of the same type.</p>
+
+      <p>Similarly, the final type signature (for the <code class="function">head</code> function)
+      specifies a function that accepts a list of <code class="type">a</code> (for some type <code class="type">a</code>), and
+      returns a value of the same type <code class="type">a</code>.</p>
+
+      <p>It is possible to use multiple type variables in a single type signature. For example,
+      the <code class="function">fst</code> function accepts a 2-tuple, whose components can each be of any
+      type, and returns the value of the first component. Similarly, the <code class="function">snd</code>
+      function accepts a 2-tuple with components of any type, and returns the second
+      component:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>fst ("foo", 2.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">"foo"</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>snd ("foo", 2.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">2.0</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t fst</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(a, b) -&gt; a</code>
+</span></p></div>
+      </div>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t snd</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(a, b) -&gt; b</code>
+</span></p></div>
+      </div>
+
+      <p>Note that the type signature for <code class="code">fst ((a, b) -&gt; a)</code> contains two type
+      variables. The first component of the argument can be of any type; the second component can
+      also be of any type, and needn't be the same type as the first. But whatever the type of the
+      first component is, the return value must be of the same type, because the first component and
+      the return type have the same type variable (<code class="varname">a</code>).</p>
+
+      <p>Type variables are distinguished from specific type names by their case. Type variables
+      always begin with a lower-case letter, whereas type names always begin with an upper-case
+      letter. It is customary to choose type variable names starting with <code class="varname">a</code> and
+      moving up the alphabet (<code class="varname">b</code>, <code class="varname">c</code>, etc.) as new names are
+      required.</p>
+
+      
+
+      
+
+      
+
+      
+    </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch02s02s04.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch02s03s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Case expressions, part 1&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Type class constraints</td></tr></table></div></body></html>

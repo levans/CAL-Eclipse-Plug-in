@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>In a new module in a second project, loaded via a CAL workspace file</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="prev" href="bk01ch03s03.html" title="In a new module"><link rel="next" href="bk01ch03s04s01.html" title="Option 1: load the workspace on startup"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk01ch03s04s01.html" title="Option 1: load the workspace on startup"><link rel="subsection" href="bk01ch03s04s02.html" title="Option 2: load the workspace from the ICE command prompt"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">In a new module in a second project, loaded via a CAL workspace
+      file</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk01ch03s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">Chapter&nbsp;3.&nbsp;Tutorial: Hello World</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk01ch03s04s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N2064B"></a>In a new module in a second project, loaded via a CAL workspace
+      file</h2></div></div></div>
+      
+
+      <div class="itemizedlist"><ul type="disc"><li>
+          <p>Create a new Java project.</p>
+
+          <div class="itemizedlist"><ul type="circle" compact><li>
+              <p>From the Eclipse menu, select: <span><strong class="guimenu">File</strong></span> &rarr; <span><strong class="guisubmenu">New</strong></span> &rarr; <span><strong class="guimenuitem">Project...</strong></span></p>
+
+              <div class="itemizedlist"><ul type="square"><li>
+                  <p>Wizard (Select a wizard):</p>
+
+                  <div class="itemizedlist"><ul type="disc" compact><li>
+                      <p>Select "Java Project".</p>
+                    </li><li>
+                      <p>Click "Next".</p>
+                    </li></ul></div>
+                </li><li>
+                  <p>Wizard (Create a Java project):</p>
+
+                  <div class="itemizedlist"><ul type="disc" compact><li>
+                      <p>Enter a project name</p>
+                    </li><li>
+                      <p>Click "Finish".</p>
+                    </li></ul></div>
+                </li></ul></div>
+            </li></ul></div>
+        </li><li>
+          <p>Add a Java source folder</p>
+
+          <div class="itemizedlist"><ul type="circle" compact><li>
+              <p>In the Package Explorer view, right-click on the new
+              project. Select <span><strong class="guimenu">New</strong></span> &rarr; <span><strong class="guimenuitem">Source Folder</strong></span>.</p>
+            </li><li>
+              <p>Enter "MySource" as the folder name.</p>
+            </li></ul></div>
+        </li><li>
+          <p>Create a new module "MyModule2" in the new source
+          folder.</p>
+
+          <div class="itemizedlist"><ul type="circle" compact><li>
+              <p>In the Package Explorer view, right-click on the source
+              folder. Select <span><strong class="guimenu">New</strong></span> &rarr; <span><strong class="guimenuitem">Other...</strong></span>. In the wizard dialog, select: <span><strong class="guimenu">CAL</strong></span> &rarr; <span><strong class="guimenuitem">CAL Module</strong></span>.</p>
+            </li><li>
+              <p>For the file name, enter
+              "<strong class="userinput"><code>MyModule2</code></strong>" (case-sensitive).</p>
+            </li></ul></div>
+        </li><li>
+          <p>In the editor, enter the following text after the import
+          declaration.</p>
+
+          <p><strong class="userinput"><code>myFunction = "Hello World";</code></strong></p>
+        </li><li>
+          <p>Add a folder for workspace declarations</p>
+
+          <div class="itemizedlist"><ul type="circle" compact><li>
+              <p>In the Package Explorer view, right-click on the new
+              MySource folder. Select <span><strong class="guimenu">New</strong></span> &rarr; <span><strong class="guimenuitem">Folder</strong></span>.</p>
+            </li><li>
+              <p>For the folder name, enter "Workspace Declarations"
+              (case-sensitive).</p>
+            </li></ul></div>
+        </li><li>
+          <p>Create a new workspace declaration "myworkspace.cws" in the
+          Workspace Declarations folder</p>
+
+          <div class="itemizedlist"><ul type="circle" compact><li>
+              <p>In the Package Explorer view, right-click on the Workspace
+              Declarations folder. Select <span><strong class="guimenu">New</strong></span> &rarr; <span><strong class="guimenuitem">File...</strong></span>.</p>
+            </li><li>
+              <p>For the file name, enter "myworkspace.cws"
+              (case-sensitive).</p>
+            </li></ul></div>
+        </li><li>
+          <p>Open the new file in an editor</p>
+
+          <div class="itemizedlist"><ul type="circle" compact><li>
+              <p>Expand the Workspace Declarations folder.</p>
+            </li><li>
+              <p>Double-click myworkspace.cws.</p>
+            </li></ul></div>
+        </li><li>
+          <p>In the editor, enter the following text:</p>
+
+          <pre class="programlisting">StandardVault MyModule2
+import StandardVault cal.platform.cws
+</pre>
+        </li></ul></div>
+
+      
+
+      
+    </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk01ch03s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk01ch03.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk01ch03s04s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">In a new module&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Option 1: load the workspace on startup</td></tr></table></div></body></html>

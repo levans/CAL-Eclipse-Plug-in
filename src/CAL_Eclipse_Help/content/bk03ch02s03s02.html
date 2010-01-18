@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Higher-order functions</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch02s03.html" title="Functions"><link rel="prev" href="bk03ch02s03s01.html" title="Type class constraints"><link rel="next" href="bk03ch02s03s03.html" title="Defining functions"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Higher-order functions</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch02s03s01.html">Prev</a>&nbsp;</td><th align="center" width="60%">Functions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch02s03s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N21D8F"></a>Higher-order functions</h3></div></div></div>
+        
+
+        <p>We mentioned above that functions are themselves values. This means that it is
+        possible for a function to accept another function as an argument, and/or to return
+        functions. A function which operates upon other functions is called a higher-order function.
+        Higher-order functions are a central technique of functional programming.</p>
+
+        <p>CAL provides a number of built-in higher-order functions in the standard library
+        modules. Many, although not all, of these functions abstract various kinds of iterations
+        over lists, arrays and other container types.</p>
+
+        <p>The <code class="function">map</code> function accepts two arguments: A function that accepts a
+        single argument, and a list of elements of the type that the function accepts.
+        <code class="function">map</code> returns a list of the results of applying the function argument to
+        each element of the list argument:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t map</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(a -&gt; b) -&gt; [a] -&gt; [b]</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>map isEven [9, 8, 7, 6]</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">[False, True, False, True]</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>map head [['H', 'T'], ['1', '2'], ['a', 'b', 'c']]</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">['H', '1', 'a']</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>map fst [("Q1",True), ("Q2",False), ("Q3",False), ("Q4", True)]</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">["Q1", "Q2", "Q3", "Q4"]</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>map fst [['H', 'T'], ['1', '2'], ['a', 'b', 'c']]</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">Type Error during an application. Caused by: Type clash: 
+type constructor Prelude.Tuple2 does not match Prelude.List.</code>
+</span></p></div>
+          </div></p>
+
+        <p>The last call fails because the fst function accepts a tuple argument, but the list
+        passed to <code class="function">map</code> is a list of lists, not tuples.</p>
+
+        <p>The filter function accepts two arguments: a function that accepts a single argument
+        and returns a <code class="type">Boolean</code> value, and a list of elements of a type that the function
+        accepts. It returns a list of each element for which the function argument returns
+        <code class="function">True</code>:</p>
+
+        <p>The final call fails, because <code class="function">head</code> of a list of
+        <code class="type">Char</code>s returns a <code class="type">Char</code> value, not a <code class="type">Boolean</code>
+        value.</p>
+
+        <p>The <code class="function">compose</code> function accepts two single-argument functions and
+        returns a new function equivalent to applying the first function to the result of the second
+        function. The first function must accept as its argument values of the same type as the
+        second function returns.<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>fst (1::Int, 'E')</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">1</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>isEven 1</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">False</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>isEven (fst (1::Int, 'E'))</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">False</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(compose isEven fst) (1::Int, 'E')</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">False</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(compose fst isEven) (1::Int, 'E')</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">Type Error during an application. Caused by: Type clash: 
+type constructor Prelude.Boolean does not match a record type.</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t fst</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(a, b) -&gt; a</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t isEven</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">Int -&gt; Boolean</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t (compose isEven fst)</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Int, a) -&gt; Boolean</code>
+</span></p></div>
+          </div></p>
+
+        <p>The attempt to call <code class="code">(compose fst isEven)</code> fails, (even though the call to
+        <code class="code">(compose isEven fst)</code> succeeds) because <code class="function">isEven</code> returns a
+        <code class="type">Boolean</code>, whereas <code class="function">fst</code> accepts a 2-tuple as its
+        argument.<sup>[<a href="#ftn.N21E8E" name="N21E8E">2</a>]</sup></p>
+      <div class="footnotes"><br><hr align="left" width="100"><div class="footnote">
+            <p><sup>[<a href="#N21E8E" name="ftn.N21E8E">2</a>] </sup><code class="function">fst</code> has type <code class="type">(a, b) -&gt; a</code>, and
+            <code class="function">isEven</code> has type <code class="type">Int -&gt; Boolean</code>. It's possible to
+            use the output from <code class="function">fst</code> as the input to
+            <code class="function">isEven</code>, because we can treat the type variable <code class="varname">a</code>
+            as referring to the <code class="type">Int</code> type (in other words, the function constructed by
+            <code class="function">compose</code> will accept any 2-tuple whose first element is an
+            <code class="type">Int</code>). However, there is no way to use the output of
+            <code class="function">isEven</code> as input to <code class="function">fst</code>, because there's no way
+            to bind the type variables such that a <code class="type">Boolean</code> value matches the type
+            <code class="type">(a, b)</code>.</p>
+          </div></div></div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch02s03s01.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch02s03.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch02s03s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Type class constraints&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Defining functions</td></tr></table></div></body></html>

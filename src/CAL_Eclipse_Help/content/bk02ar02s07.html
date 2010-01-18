@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>What is the accumulating parameters coding pattern, and why do I need it?</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar02.html" title="Effective CAL"><link rel="prev" href="bk02ar02s06.html" title="What is plinging? Part 2: plinging of data constructor arguments"><link rel="next" href="bk02ar02s08.html" title="What is the Prelude.eager function and when would I use it?"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">What is the accumulating parameters coding pattern, and why do I need it?</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar02s06.html">Prev</a>&nbsp;</td><th align="center" width="60%">Effective CAL</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar02s08.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N2130B"></a>What is the accumulating parameters coding pattern, and why do I need it?</h2></div></div></div>
+    
+
+    <p>You may have noticed that many functions in CAL's standard libraries are implemented by
+    calling local helper functions with more arguments. These extra arguments are called
+    accumulating parameters and are used to store partial results required for the
+    computation.</p>
+
+    <p>For example, the definition of the length function is (essentially):<pre class="programlisting">length !list =
+    let
+        lengthHelper :: Int -&gt; [a] -&gt; Int;
+        lengthHelper !acc !list =
+            case list of
+            [] -&gt; acc;
+            listHead : listTail -&gt; 
+                lengthHelper (acc + 1) listTail;
+            ;
+    in  
+        lengthHelper 0 list;</pre></p>
+
+    <p>The <em class="parameter"><code>acc</code></em> argument of lengthHelper represents the
+    number of elements of the original list traversed so far while the <em class="parameter"><code>list</code></em> argument represents the remaining elements of the list yet to
+    be visited. In a sense, these arguments can be considered as the partial results of the
+    computation of the length of the original list. Since the <em class="parameter"><code>acc</code></em> argument is plinged, it will be a literal Int value at each
+    reduction of lengthHelper. The standard definition of length is O(1) in space and O(n) in time.
+    It is a key fact here that the accumulating parameter acc get evaluated to WHNF at each
+    iteration. Sometimes this is accomplished by plinging, and sometimes through other means, such
+    as the function naturally being strict in a given argument.</p>
+
+    <p>As an aside, the recursive call to lengthHelper is <span class="emphasis"><em>tail-recursive</em></span>.
+    From a performance point of view this is a good thing in that the lecc runtime will not use any
+    heap in making the recursive call. At the java byte code level it is implemented as a goto.
+    However, even without the tail-recursion optimization, length will be O(1) in space and O(n) in
+    time, so the existence of the tail-recursion optimization is not a key point in understanding
+    why length is implemented as it is. However, the tail-recursion optimization is an important
+    topic in its own right and will be covered in another Effective CAL essay. A point to note now
+    though is that it does not fundamentally affect asymptotic performance characteristics of your
+    algorithm, but only the proportionality constant. (It can have a rather dramatic improvement on
+    the proportionality constant though, since a goto instruction is much faster than allocating
+    memory on the heap).</p>
+
+    <p>An alternative definition of length that does not use an accumulating parameters helper
+    would be:<pre class="programlisting">//warning- this is an example of how not to write length
+lengthAlt :: [a] -&gt; Int;
+lengthAlt !list = 
+   case list of
+   [] -&gt; 0;
+   listHead : listTail -&gt;
+       1 + lengthAlt listTail;
+   ;</pre></p>
+
+    <p>Although this definition is O(n) in time, it is also O(n) in space. Moreover, it is also
+    O(n) in stack! To verify this, running an expression such as:<pre class="screen">lengthAlt (upFromTo (1::Int) 10000)</pre>on
+    the ICE console will result in a java.lang.StackOverflowError being reported.</p>
+
+    <p>The first hint that a problem will occur is that reducing an application of lengthAlt to
+    WHNF results in a literal Int. However, to return a literal Int from the recursion step of
+    <pre class="screen">1 + lengthAlt listTail</pre>requires that the second argument of the <code class="code">+</code>
+    operator, namely lengthAlt listTail be itself evaluated to WHNF. This requires a recursive call
+    on the stack to obtain the result before the addition can be done. Eventually he function
+    application will reduce to an intermediate computation of (1 + (1 + (1 + (..... )))) which when
+    evaluated will run out of stack.</p>
+
+    <p>The solution in this particular case is to do the additions of 1 in an incremental
+    fashion, one list element traversal at a time, rather than wait until the list is entirely
+    traversed.</p>
+
+    <p>A general principle here is that it is bad to write directly recursive functions that
+    perform computations in their returned value expression.</p>
+
+    <p>Listed below is essentially the definition of the List.reverse function. It uses a local
+    recursive helper function reverseHelper, which has accumulating parameters source and result. At
+    each recursive call, an element of source is moved to result. So result can be considered to be
+    the partially reversed list, and source can be considered to be the part of the original list
+    that still needs to be reversed.<pre class="programlisting">reverse :: [a] -&gt; [a];
+reverse !list =
+    let
+        reverseHelper :: [a] -&gt; [a] -&gt; [a];
+        reverseHelper !source result =
+            case source of
+            [] -&gt;
+                result;
+            headSource : tailSource -&gt;
+                reverseHelper
+                    tailSource (headSource : result);
+            ;
+    in
+        reverseHelper list [];</pre></p>
+
+    <p>reverse is an interesting contrast to the previous example of length, since its result
+    type, [a] is a lazy type. However, the reverse function itself will return a list whose spine is
+    fully evaluated, even though the elements themselves are not evaluated. It is O(n) in time and
+    O(n) in space, where n is the length of the list to reverse. If the argument list is an infinite
+    list, reverse not terminate.</p>
+
+    <p>Here is a more direct definition of reverse that does not use accumulating parameters.
+    <pre class="programlisting">//warning- this is an example of how not to write reverse
+reverseAlt :: [a] -&gt; [a];   
+reverseAlt !list = 
+   case list of
+   [] -&gt; [];
+   listHead : listTail -&gt;
+       reverseAlt listTail ++ [listHead];
+   ;</pre></p>
+
+    <p>This definition is still O(n) in space, but it is O(n^2) in time. To see this, note that
+    the reduction to WHNF of<pre class="screen">reverseAlt [1 :: Int, 2, 3, 4, 5]</pre>eventually reaches the
+    step:<pre class="screen">(((([] ++ [5]) ++ [4]) ++ [3]) ++ [2]) ++ [1]</pre></p>
+
+    <p>Now, <code class="code">++</code>, the append class method on List, is O(n) in time, where n is the
+    length of its first argument list. It doesn't take any time at all handling its second argument
+    list. This is because <code class="code">++</code> only needs to copy (the spine) of its first argument list,
+    and not the second argument list- it can just reuse that value. (For details see the
+    implementation of Prelude.appendList).</p>
+
+    <p>Thus, we can see the reason for the O(n^2) time behavior of reverseAlt- it is applying the
+    append operator in a left associative way, when the work is being done in the first argument.
+    This is precisely the wrong way to do it! As an aside, this is why the <code class="code">++</code> operator
+    is right-associate so that an expression like:<pre class="screen">[] ++ [5] ++ [4] ++ [3] ++ [2] ++ [1]</pre>in
+    fact parses as:<pre class="screen">[] ++ ([5] ++ ([4] ++ ([3] ++ ([2] ++ [1]))))</pre>and thus can be
+    evaluated without excessive copying of intermediate lists.</p>
+
+    <p>Note that the accumulating parameters pattern is also useful for accumulating several
+    partial results. The Tutorial_Fibonacci module has several different examples and a discussion
+    on creating efficient functions for computing the Fibonacci numbers. One of those efficient
+    functions, fib2, uses three accumulating parameters. This makes sure that the state needed to
+    efficiently perform the computation is available at each recursive step, and in a sufficiently
+    evaluated form. It is analogous to how such a Fibonacci function would be efficiently
+    implemented in Java, except that the use of mutable local state variables in Java is replaced by
+    the accumulating parameters. The CAL version is much more declarative and equally as efficient
+    as the Java version.<pre class="programlisting">fib2 :: Int -&gt; Integer;       
+fib2 !n =
+    let
+        /**
+         * Computes the nth fibonacci number
+         * (where n is defined in the enclosing scope
+         *  as the argument to fib2).
+         * @arg i an index (will be &lt;= n)
+         * @arg fib_i_minus_1 the (i-1)th fibonacci number
+         * @arg fib_i the ith fibonacci number
+         * @return the nth fibonacci number
+         */
+        fibHelper :: Int -&gt; Integer -&gt; Integer -&gt; Integer;
+        fibHelper !i !fib_i_minus_1 !fib_i =
+            if i == n then
+                fib_i
+            else
+                fibHelper
+                    (i + 1) fib_i (fib_i_minus_1 + fib_i);
+    in
+        fibHelper 1 0 1;</pre></p>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar02s06.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar02s08.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">What is plinging? Part 2: plinging of data constructor arguments&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;What is the Prelude.eager function and when would I use it?</td></tr></table></div></body></html>

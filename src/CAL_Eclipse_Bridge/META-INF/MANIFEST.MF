@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.openquark.cal.eclipse.bridge
+Bundle-Version: 1.2.0.131v20060927
+Bundle-Activator: org.openquark.cal.eclipse.bridge.CALEclipseBridgePlugin
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: 
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.openquark.cal.runtime,
+ org.openquark.cal.platform,
+ org.openquark.util 
+Eclipse-RegisterBuddy: 
+ org.openquark.cal.platform
+Export-Package: 
+ org.openquark.cal.eclipse.bridge

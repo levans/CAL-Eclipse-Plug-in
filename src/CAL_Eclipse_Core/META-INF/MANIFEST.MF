@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.openquark.cal.eclipse.core; singleton:=true
+Bundle-Version: 1.2.0.131v20060927
+Bundle-Activator: org.openquark.cal.eclipse.core.CALEclipseCorePlugin
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.openquark.import,
+ org.openquark.util,
+ org.openquark.cal.runtime,
+ org.openquark.cal.platform,
+ org.eclipse.jdt.core
+Export-Package: org.openquark.cal.eclipse.core;x-friends:="org.openquark.cal.eclipse.ui",
+ org.openquark.cal.eclipse.core.builder,
+ org.openquark.cal.eclipse.core.compiler,
+ org.openquark.cal.eclipse.core.formatter,
+ org.openquark.cal.eclipse.core.formatter.align,
+ org.openquark.cal.eclipse.core.util
+Eclipse-LazyStart: true

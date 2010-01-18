@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Matching records</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s02s11.html" title="Case expressions"><link rel="prev" href="bk03ch03s02s11s02.html" title="Matching tuples"><link rel="next" href="bk03ch03s02s11s04.html" title="Matching data constructors"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Matching records</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s02s11s02.html">Prev</a>&nbsp;</td><th align="center" width="60%">Case expressions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s02s11s04.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N22CDA"></a>Matching records</h4></div></div></div>
+          
+
+          <p>There are three forms of pattern for matching records:<pre class="synopsis">{}</pre><pre class="synopsis">{field_name1 [= pattern1] [, field_name2 [= pattern2] ...]}</pre><pre class="synopsis">{ pattern0 | field_name1 [= pattern1] [, field_name2 [= pattern2] ...]}</pre>The
+          first form matches empty records only. The following function will signal an error if it
+          is called with anything other than an empty record:<div class="informalexample">
+              <pre class="programlisting">emptyRecordOnly :: {} -&gt; String;
+emptyRecordOnly record =
+    case record of
+    {} -&gt; "empty record";
+    ;</pre>
+            </div></p>
+
+          <p>The second form matches a record that contains exactly the specified fields. The
+          following function will signal an error if it is called with anything other than a record
+          that contains a name field, an age field, and nothing else:<div class="informalexample">
+              <pre class="programlisting">showNameAgeRecord :: {name :: String, age :: Double} -&gt; String;
+showNameAgeRecord record =
+    case record of
+    {name = nameValue, age = ageValue} -&gt; 
+        concat ["Name =", nameValue, ". Age =", doubleToString ageValue];
+    ;</pre>
+            </div></p>
+
+          <p>In the above example, the values of the <code class="varname">name</code> and
+          <code class="varname">age</code> fields are bound to <em class="parameter"><code>nameValue</code></em> and
+          <em class="parameter"><code>ageValue</code></em> respectively. However, it is not necessary to specify a
+          new name for fields. If the new name is omitted, then the field will be bound to its own
+          name. For example, the following definition of <code class="function">showNameAgeRecord</code> is
+          equivalent to the above definition:<div class="informalexample">
+              <pre class="programlisting">showNameAgeRecord :: {name :: String, age :: Double} -&gt; String;
+showNameAgeRecord record =
+    case record of
+    {name, age} -&gt; 
+        concat ["Name =", name, ". Age =", doubleToString age];
+    ;</pre>
+            </div></p>
+
+          <p>The values of the fields are bound to their own names in this version. This
+          technique is known as "punning". Punning is forbidden for ordinal fields. You must always
+          specify a new name for ordinal fields of a record if you wish to unpackage them using a
+          case expression. In the following example, we bind the fields of the first record to
+          <code class="varname">name1</code> and <code class="varname">age1</code> and the fields of the second record
+          to <code class="varname">name2</code> and <code class="varname">age2</code>. This allows us to access the
+          fields of both records at the same time. If we had used punning (i.e., had not provided
+          new names for the fields), then the binding for the <code class="varname">name</code> field of
+          <code class="varname">record2</code> would have masked the binding for the <code class="varname">name</code>
+          field of <code class="varname">record1</code>.<div class="informalexample">
+              <pre class="programlisting">equalsNameAgeRecord :: {name :: String, age :: Double} -&gt; {name :: String, age :: Double} -&gt; Boolean;
+equalsNameAgeRecord record1 record2 =
+    case record1 of
+    {name = name1, age = age1} -&gt;
+        case record2 of
+        {name = name2, age = age2} -&gt;
+            name1 == name2 &amp;&amp; age1 == age2;
+        ;
+    ;</pre>
+            </div></p>
+
+          <p>With <code class="function">equalsNameAgeRecord</code> defined as above:<div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>equalsNameAgeRecord {name = "Matt", age = 54} {age = 54, name = "Matt"}</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">True</code></span></p></div>
+            </div><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>equalsNameAgeRecord {name = "Jack", age = 54.0, profession = 
+"blacksmith"} {name = "Jack", age = 54.0, profession = "blacksmith"}</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">Type Error during an application. Caused by: the fields of 
+the two record type {age :: Prelude.Double, name :: Prelude.String} 
+and {age :: Prelude.Double, name :: Prelude.String, profession :: 
+Prelude.String} must match exactly.
+</code></span></p></div>
+            </div></p>
+
+          <p>Note that the first expression returns <code class="function">True</code> even though the
+          fields are in different orders. The second expression signals an error because we have
+          passed in records that have too many fields.</p>
+
+          <p>It is possible for a single record pattern to bind some fields to new names and
+          other fields to punned names:<div class="informalexample">
+              <pre class="programlisting">normalizeVectorRecord :: {#1 :: Double, #2 :: Double, isNormalized :: Boolean} -&gt; {#1 :: Double, #2 :: Double, isNormalized :: Boolean};
+normalizeVectorRecord vector =
+    case vector of
+    {#1 = x, #2 = y, isNormalized} -&gt;
+        if isNormalized then
+            vector
+        else
+            let
+                length :: Double;
+                length = vectorLength (x, y);
+            in
+                {#1 = x / length, #2 = y / length, isNormalized = True};
+    ;</pre>
+            </div></p>
+
+          <p>In the example above, we bind the ordinal fields <code class="varname">#1</code> and
+          <code class="varname">#2</code> to the names <code class="varname">x</code> and <code class="varname">y</code>
+          respectively. <code class="function">isNormalized</code> is bound to its own name. With
+          <code class="function">normalizeVectorRecord</code> defined as above:<div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>normalizeVectorRecord {#1 = 3.0, #2 = 4.0, isNormalized = False}</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">{#1 = 0.6, #2 = 0.8, isNormalized = True}</code></span></p></div>
+            </div></p>
+
+          <p>The final form matches records that contain <span class="emphasis"><em>at least</em></span> the
+          specified fields:<div class="informalexample">
+              <pre class="programlisting">extractJob :: r\job =&gt; {r | job :: a} -&gt; a;
+extractJob record =
+    case record of
+    {rest | job = jobValue} -&gt; jobValue;
+    ;</pre>
+            </div></p>
+
+          <p>In the example above, the <code class="varname">job</code> field of <code class="varname">record</code>
+          is bound to the name <code class="varname">jobValue</code>. A record containing all of the fields of
+          <code class="varname">record</code> except for <code class="varname">job</code> is bound to the name
+          <code class="varname">rest</code>. This record is referred to as the "base record". Note that the
+          type of the base record (in the type signature) has a constraint. The constraint specifies
+          that the type <code class="type">r</code> does not have a field named <code class="varname">job</code>. This kind
+          of constraint is referred to as a lacks constraint; see <a href="bk03ch03s03s06s02.html#LacksConstraints">the section called &ldquo;Lacks constraints&rdquo;</a> for details. Punned names are permitted for both forms of
+          non-empty record matching. In addition, any name pattern may be the wildcard name
+          "<code class="literal">_</code>" (underscore) for fields that you don't want to access. The
+          following definition of <code class="function">extractJob</code> is equivalent to the above
+          definition:<div class="informalexample">
+              <pre class="programlisting">extractJob :: r\job =&gt; {r | job :: a} -&gt; a;
+extractJob record =
+    case record of
+    {_ | job } -&gt; job;
+    ;</pre>
+            </div></p>
+
+          <p>In this version, the <code class="varname">job</code> field is bound to the name
+          <code class="varname">job</code>, and the base record is not bound to any name (since we don't refer
+          to it).</p>
+
+          <p>With <code class="function">extractJob</code> defined as above (either
+          definition):<div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>extractJob {job = "pilot"}</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">"pilot"</code></span></p></div>
+            </div><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>extractJob {job = "telephone sanitizer", location = (3.0, 1.2)}</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">"telephone sanitizer"</code></span></p></div>
+            </div></p>
+
+          <p>The additional field (<code class="varname">location</code>) is ignored in the second call,
+          because <code class="function">extractJob</code> does not make use of the base record.</p>
+
+          <p>The following function does make use of the base record: <pre class="programlisting">removeJob :: r\job =&gt; {r | job :: String} -&gt; r;
+removeJob record =
+    case record of
+    {rest | job = _} -&gt; rest;
+    ;</pre></p>
+
+          <p>With <code class="function">removeJob</code> defined as above:<div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>removeJob {name = "Ford", job = "hitchhiker", age = 32.0, location = 
+"Earth"}</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">{name = "Ford", age = 32.0, location = "Earth"}</code></span></p></div>
+            </div></p>
+
+          <p>Note that a case expression that matches records can contain only a single
+          alternative.</p>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s02s11s02.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s02s11.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s02s11s04.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Matching tuples&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Matching data constructors</td></tr></table></div></body></html>

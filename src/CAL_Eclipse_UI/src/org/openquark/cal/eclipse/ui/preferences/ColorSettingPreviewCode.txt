@@ -1,0 +1,25 @@
+/**
+ * Contains {@em My@} Data type, which is {@link typeClass = Prelude.Outputable@}.
+ * @see typeConstructor = "MyModule2.Foo"
+ * @deprecated use {@code MyUpdatedModule@}
+ */
+module MyModule;
+import Prelude using
+    typeConstructor = Double, String;
+    ;
+
+data private MyType a =
+    private MyData1 
+        #1     :: {doubleField :: Double}       // number one
+        aField :: a |                           /* a field */
+    private MyData2;
+
+instance Prelude.Outputable (MyType a) where
+    output = outputMyTypeToJObject;
+    ;
+outputMyTypeToJObject :: MyType a -> Prelude.JObject;
+private outputMyTypeToJObject !myType = 
+    case (MyData1 {doubleField = 1.2} myType) of
+        MyData1 {aField} -> newJObject;
+    ;
+foreign unsafe import jvm "constructor java.lang.Object" newJObject :: Prelude.JObject;

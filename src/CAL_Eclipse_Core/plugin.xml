@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<!--
+ ******************************************************************************
+ * Copyright (c) 2005 Business Objects Software Limited and others.
+ * All rights reserved. 
+ * This file is made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Business Objects Software Limited - initial API and implementation based on Eclipse 3.1.2 code for
+ *                             /org.eclipse.jdt.core/plugin.xml
+ *                           Eclipse source is available at: http://www.eclipse.org/downloads/
+ *******************************************************************************
+ -->
+<plugin>
+<!-- =================================================================================== -->
+<!-- Extension: CAL Builder                                                              -->
+<!-- =================================================================================== -->
+
+   <extension
+         point="org.eclipse.core.resources.builders"
+         id="calBuilder"
+         name="%calBuilderName"
+         >
+      <builder hasNature="true">
+         <run class="org.openquark.cal.eclipse.core.builder.CALBuilder"/>
+      </builder>
+   </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: CAL Nature                                                               -->
+<!-- =================================================================================== -->
+
+   <extension
+         point="org.eclipse.core.resources.natures"
+         id="calNature"
+         name="%calNatureName"
+         >
+      <runtime>
+         <run class="org.openquark.cal.eclipse.core.CALNature"/>
+      </runtime>
+      <builder id="org.openquark.cal.eclipse.core.calBuilder"/>
+   </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: CAL Problem                                                              -->
+<!-- =================================================================================== -->
+
+    <!-- full id = Plugin.getDefault().getDescriptor().getUniqueIdentifier() + ".problem" -->
+    <extension 
+          point="org.eclipse.core.resources.markers" 
+          id="problem" 
+          name="%calProblemName"
+          >
+       <super type="org.eclipse.core.resources.problemmarker"/>
+       <super type="org.eclipse.core.resources.textmarker"/>
+       <persistent value="true"/>
+       <!-- 
+       <attribute name="id"/>
+       <attribute name="flags"/>
+       <attribute name="arguments"/>
+       -->
+    </extension>   
+
+<!-- =================================================================================== -->
+<!-- Extension: CAL Task                                                                 -->
+<!-- =================================================================================== -->
+    <extension 
+          point="org.eclipse.core.resources.markers"
+          id="task" 
+          name="%calTaskName" 
+          >
+       <super type="org.eclipse.core.resources.taskmarker"/> 
+       <persistent value="true"/>
+    </extension>
+    
+
+   
+<!-- =================================================================================== -->
+<!-- Extension: CAL File Types                                                           -->
+<!-- =================================================================================== -->
+<extension point="org.eclipse.team.core.fileTypes">
+    <fileTypes extension="cal" type="text"/>
+<!--
+    <fileTypes extension="java" type="text"/>
+    <fileTypes extension="classpath" type="text"/>
+    <fileTypes extension="properties" type="text"/>
+    <fileTypes extension="class" type="binary"/>
+    <fileTypes extension="jar" type="binary"/>
+    <fileTypes extension="jardesc" type="text"/>
+    <fileTypes extension="zip" type="binary"/>
+  -->
+</extension>
+      
+<!-- =================================================================================== -->
+<!-- Extension: CAL Content Types                                                       -->
+<!-- =================================================================================== -->
+   <extension point="org.eclipse.core.runtime.contentTypes">
+      <!-- declares a content type for CAL Source files -->
+      <content-type id="calSource" name="%calSourceName" 
+         base-type="org.eclipse.core.runtime.text"
+         priority="high"				
+         file-extensions="cal"/>
+   </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: Eclipse preferences initializer                                          -->
+<!-- =================================================================================== -->
+   <extension point="org.eclipse.core.runtime.preferences">
+      <initializer class="org.openquark.cal.eclipse.core.CALEclipseCorePreferenceInitializer"/>
+   </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: Team - CAL File Type                                                     -->
+<!-- =================================================================================== -->
+
+   <extension point="org.eclipse.team.core.fileTypes">
+      <fileTypes extension="cal" type="text"/>
+   </extension>
+        
+<!-- =================================================================================== -->
+<!-- Extension: Team Ignore - Compiled Module info (*.cmi)                               -->
+<!-- =================================================================================== -->
+
+   <extension point="org.eclipse.team.core.ignore">
+      <ignore pattern="*.cmi" enabled="true"/>
+   </extension>
+        
+</plugin>

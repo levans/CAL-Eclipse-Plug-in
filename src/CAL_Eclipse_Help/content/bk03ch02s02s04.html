@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Case expressions, part 1</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch02s02.html" title="Values and types"><link rel="prev" href="bk03ch02s02s03.html" title="Tuples"><link rel="next" href="bk03ch02s03.html" title="Functions"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Case expressions, part 1</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch02s02s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">Values and types</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch02s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N21AFB"></a>Case expressions, part 1</h3></div></div></div>
+        
+
+        <p>In addition to utility functions such as <code class="function">fst</code>,
+        <code class="function">snd</code>, <code class="function">head</code>, <code class="function">tail</code>, and so forth
+        that CAL provides for accessing the components of lists and tuples, CAL also provides a
+        construct known as the case expression. Case expressions allow you to bind the components of
+        lists and tuples to variable names to make accessing them more convenient:<sup>[<a href="#ftn.N21B0E" name="N21B0E">1</a>]</sup><pre class="programlisting">isOrigin :: Num a =&gt; (a, a, a) -&gt; Boolean;
+public isOrigin point =
+    case point of
+    (x, y, z) -&gt; x==0 &amp;&amp; y==0 &amp;&amp; z==0;
+    ;</pre></p>
+
+        <p>In the above example, the case expression matches the <em class="parameter"><code>point</code></em>
+        value. Each case expression contains one or more alternatives. An alternative is a pattern
+        (for example, <code class="code">(x, y, z)</code>) followed by a right-arrow (<code class="function">-&gt;</code>) followed by an expression. The alternative whose pattern
+        matches the case expression's argument is chosen, and the alternative's expression is
+        evaluated as the value of the case expression.</p>
+
+        <p>The pattern <code class="code">(x, y, z)</code> matches any 3-tuple. It binds the identifiers
+        <code class="varname">x</code>, <code class="varname">y</code>, and <code class="varname">z</code> to the values of the
+        first, second, and third components of the 3-tuple for the scope of the alternative's
+        expression.</p>
+
+        <p>Similar patterns can be used for tuples of any number of dimensions. Elements that you
+        don't wish to bind to an identifier can be filled in with an underscore
+        (<code class="literal">_</code>):<div class="informalexample">
+            <pre class="programlisting">myFst :: (a,b) -&gt; a;
+public myFst pair =
+    case pair of 
+    (ret, _) -&gt; ret;
+    ;    
+mySnd :: (a,b) -&gt; b;
+public mySnd pair =
+    case pair of 
+    (_, ret) -&gt; ret;
+    ;</pre>
+          </div></p>
+
+        <p>Case expressions can also be used to match against list arguments:<div class="informalexample">
+            <pre class="programlisting">any :: (a -&gt; Boolean) -&gt; [a] -&gt; Boolean;
+public any p list =
+    case list of
+    [] -&gt; False;
+    listHead : listTail -&gt; p listHead || any p listTail;
+    ;</pre>
+          </div></p>
+
+        <p>The pattern <code class="code">[]</code> matches the empty list. The pattern <code class="code">listHead :
+        listTail</code> matches any non-empty list. In the above example, the first element of the
+        list is bound to <code class="varname">listHead</code>, and the rest of the list is bound to
+        <code class="varname">listTail</code> in the second alternative.</p>
+      <div class="footnotes"><br><hr align="left" width="100"><div class="footnote">
+            <p><sup>[<a href="#N21B0E" name="ftn.N21B0E">1</a>] </sup>This is not all that case expressions are used for. See <a href="bk03ch02s04s01.html#CaseExpressionsPart2">the section called &ldquo;Case expressions, part 2&rdquo;</a>.</p>
+          </div></div></div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch02s02s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch02s02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch02s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Tuples&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Functions</td></tr></table></div></body></html>

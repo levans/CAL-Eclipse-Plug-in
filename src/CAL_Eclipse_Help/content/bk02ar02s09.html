@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>How do I create an abstract data type in CAL?</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar02.html" title="Effective CAL"><link rel="prev" href="bk02ar02s08.html" title="What is the Prelude.eager function and when would I use it?"><link rel="next" href="bk02ar02s10.html" title="CAL programming tips"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">How do I create an abstract data type in CAL?</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar02s08.html">Prev</a>&nbsp;</td><th align="center" width="60%">Effective CAL</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar02s10.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N21398"></a>How do I create an abstract data type in CAL?</h2></div></div></div>
+    
+
+    <p>An <span class="emphasis"><em>abstract data type</em></span> is one whose internal representation can be
+    changed without needing to modify the source code of client modules that make use of that type.
+    For software maintainability, it is a good idea to make a type that is subject to change or
+    enhancement into an abstract data type. Another reason to create an abstract data type is to
+    enforce invariants for values of the type that can only be ensured by using
+    <span class="emphasis"><em>constructor functions</em></span> (i.e. functions that return values of that
+    type).</p>
+
+    <p>In principle it is simple to create an abstract data type in CAL. For an algebraic data
+    type, make the type constructor public and all data constructors private. For a foreign data
+    type, make the type constructor public and the implementation scope private. If a scope
+    qualifier is omitted, the scope is taken to be private.</p>
+
+    <p>For example, the <code class="code">Map</code> algebraic data type has the public type constructor
+    <code class="code">Map</code> and the data constructors <code class="code">Tip</code> and <code class="code">Bin</code> are each
+    private, so it is an abstract data type.</p>
+
+    <pre class="programlisting">/** A map from keys (of type {@code k@}) to values
+   (of type {@code a@}). */
+data public Map k a =
+    private Tip |
+    private Bin
+        size      :: !Int
+        key       :: !k
+        value     :: a
+        leftMap   :: !(Map k a)
+        rightMap  :: !(Map k a);
+</pre>
+
+    <p>There are a number of invariants of this type: the <code class="code">size</code> field represents the
+    number of elements in the map represented by its <code class="code">Bin</code> value. The keys in
+    <code class="code">leftMap</code> are all less than <code class="code">key</code>, which in turn is less than all the keys
+    in <code class="code">rightMap</code>. In particular, non-empty Map values can only be created if the key
+    parameter type is a member of the <code class="code">Ord</code> type class.</p>
+
+    <p>Values of the <code class="code">Map</code> type can be created outside the
+    <code class="code">Cal.Collections.Map</code> module only by using constructor functions such as
+    <code class="code">fromList</code> and <code class="code">insert</code>:<pre class="programlisting">fromList :: Ord k =&gt; [(k,a)] -&gt; Map k a;
+public fromList !list = ...
+
+insert :: Ord k =&gt; k -&gt; a -&gt; Map k a -&gt; Map k a;
+public insert !key value !map = ...
+</pre></p>
+
+    <p>The owner of the <code class="code">Cal.Collections.Map</code> module must ensure that all invariants
+    of the <code class="code">Map</code> type are satisfied, but if this is done, then it will automatically hold
+    for clients using these functions.</p>
+
+    <p>Some examples of foreign abstract data types are <code class="code">Color</code>,
+    <code class="code">StringNoCase</code> and <code class="code">RelativeDate</code>:<div class="informalexample">
+        <pre class="screen">data foreign unsafe import jvm private "java.awt.Color"
+    public Color;
+</pre>
+      </div><div class="informalexample">
+        <pre class="screen">data foreign unsafe import jvm private "java.lang.String"
+    public StringNoCase;
+</pre>
+      </div><div class="informalexample">
+        <pre class="screen">data foreign unsafe import jvm private "int"
+    public RelativeDate;
+</pre>
+      </div></p>
+
+    <p>The private implementation scope for <code class="code">Color</code> means that a foreign function
+    whose type involves <code class="code">Color</code> can only be declared in the
+    <code class="code">Cal.Graphics.Color</code> module where the <code class="code">Color</code> type is defined. A foreign
+    function declaration involving the <code class="code">Color</code> type relies on the compiler knowing that
+    the <code class="code">Color</code> type corresponds to <code class="code">java.awt.Color</code> to resolve the
+    corresponding Java entity i.e. it must know about the implementation of the <code class="code">Color</code>
+    type. Having a private implementation scope means that the <code class="code">Color</code> type can be
+    changed to correspond to a different Java class, or indeed to be an algebraic type, without the
+    risk of breaking client code.</p>
+
+    <p>In all these three cases there are useful, and different, design reasons to adopt a
+    private implementation scope:</p>
+
+    <p>For <code class="code">RelativeDate</code>, the Java implementation type <code class="code">int</code> represents a
+    coded Gregorian date value in the date scheme used by Crystal Reports. Not all <code class="code">int</code>
+    values correspond to valid dates, and the algorithm to map an <code class="code">int</code> to a
+    year/month/day equivalent is fairly complicated, taking into account things like Gregorian
+    calendar reform. Thus, it is desirable to hide the implementation of this type.</p>
+
+    <p>For <code class="code">StringNoCase</code>, the implementation is more straightforward as a
+    <code class="code">java.lang.String</code>. The reason to adopt a private implementation scope is to ensure
+    that all functions involving <code class="code">StringNoCase</code> preserve the semantics of
+    <code class="code">StringNoCase</code> as representing a case-insensitive string value. Otherwise it is very
+    easy for clients to declare a function such as:<div class="informalexample">
+        <pre class="screen">foreign unsafe import jvm "method replace"
+    replaceChar :: StringNoCase -&gt; Char -&gt; Char -&gt; StringNoCase;
+</pre>
+      </div>which does not handle case-insensitivity correctly, but is a perfectly valid
+    declaration. This declaration results in a compilation error when it is placed outside the
+    module in which <code class="code">StringNoCase</code> is defined because of the private implementation scope
+    of <code class="code">StringNoCase</code>.</p>
+
+    <p>For <code class="code">Color</code>, the issue is somewhat more subtle. The <code class="code">java.awt.Color</code>
+    implementation type is semantically the same as the CAL <code class="code">Color</code> type. The problem is
+    that <code class="code">java.awt.Color</code> is mutable (since it can be sub-classed to create a mutable
+    type). It is preferable for a first-class CAL type to not be mutable, so we simply make the
+    implementation scope private to ensure that this will be the case.</p>
+
+    <p>A somewhat less encapsulated kind of abstract data type can be created using
+    <span class="emphasis"><em>friend modules</em></span> and <span class="emphasis"><em>protected</em></span> scope. For example, if an
+    algebraic type is public, and all its data constructors are protected, then the data
+    constructors can be accessed in the friend modules of the module in which the type is defined.
+    Effectively this means that the implementation of the semantics of the type stretches over the
+    module in which the type is defined, and all of its friend modules. These must all be checked if
+    the implementation of the type is modified.</p>
+
+    <p>Given the merits of abstract data types discussed above, it is perhaps surprising that
+    most of the core types defined in the Prelude module are not abstract data types. For example:
+    <code class="code">Boolean</code>, <code class="code">Char</code>, <code class="code">Int</code>, <code class="code">Double</code>,
+    <code class="code">String</code>, <code class="code">List</code>, <code class="code">Maybe</code>, <code class="code">Either</code>,
+    <code class="code">Ordering</code>, <code class="code">JObject</code>, <code class="code">JList</code>, and all record and tuple types
+    are non-abstract types.</p>
+
+    <p>There are different reasons for this, depending on the particular type involved.</p>
+
+    <p>For example, <code class="code">Boolean</code>, <code class="code">List</code>, <code class="code">Maybe</code>,
+    <code class="code">Either</code> and <code class="code">Ordering</code> are all rather canonical algebraic data types with
+    a long history in functional languages, with many standard functions using them. They are thus
+    guaranteed never to change. In addition, their values have no particular design invariants that
+    need to be enforced via constructor functions. Exposing the data constructors gives clients some
+    additional syntactic flexibility in using values of the type. For example, they can pattern
+    match on the values using case expressions or let patterns.</p>
+
+    <p>Essentially the same explanation holds for record and tuple types. Although non-tuple
+    record types are less canonical, they do correspond to the fundamental notion of an anonymous
+    named-field product type. The "anonymous" here simply means that the programmer can create an
+    entirely new record type simply by creating a value; the type does not have to be declared
+    anywhere prior to use.</p>
+
+    <p><code class="code">Char</code>, <code class="code">Int</code>, <code class="code">Double</code>, <code class="code">String</code>,
+    <code class="code">JObject</code> and <code class="code">JList</code> are foreign types where in fact part of the
+    semantics of the type is that we want clients to know that the type is a foreign type. For
+    example, we want clients to know that <code class="code">Prelude.Int</code> is essentially the Java primitive
+    unboxed <code class="code">int</code> type, and has all the semantics you would expect of the Java
+    <code class="code">int</code> type i.e. this is quite different from <code class="code">RelativeDate</code> which is using
+    <code class="code">int</code> as its implementation type in a very tactical way that we may choose to change.
+    One can think of a public foreign type declaration with public implementation scope as simply
+    introducing the Java type into the CAL namespace.</p>
+
+    <p>One interesting point here is with CAL's naming convention for public foreign types. We
+    prefix a type name by "J" (for "Java") for foreign types with public implementation type such
+    that the underlying Java type is mutable. This is intended as mnemonic that the type is not a
+    pure functional type and thus some caution needs to be taken when using it. For example,
+    <code class="code">Prelude.JObject</code> has public Java implementation type
+    <code class="code">java.lang.Object</code>.</p>
+
+    <p>In the case where the underlying Java type is not mutable, we do not use the prefix, since
+    even though the type is foreign; it is basically a first class functional type and can be freely
+    used without concern. For example, <code class="code">Prelude.String</code> has public Java implementation
+    type <code class="code">java.lang.String</code>.</p>
+
+    <p>In the case where the implementation type is private, then the fact that the type is a
+    foreign type, whether mutable or not, is an implementation detail and we do not hint at that
+    detail via the name. Thus <code class="code">Color.Color</code> has as its private Java implementation type
+    the mutable Java type <code class="code">java.awt.Color</code>.</p>
+
+    <p>When creating abstract data types it is important to not inadvertently supply public API
+    functions that conflict with the desired public semantics of the type. For example, if the type
+    is publicly a pure-functional (i.e. immutable) type such as <code class="code">Color</code>, it is important
+    not to expose functions that mutate the internal Java representation.</p>
+
+    <p>A more subtle case of inadvertently exposing the implementation of a type can occur with
+    derived instances. For example, deriving the <code class="code">Prelude.Outputable</code> and
+    <code class="code">Prelude.Inputable</code> type classes on a foreign type, whose implementation type is a
+    mutable Java reference type, allows the client to gain access to the underlying Java value and
+    mutate it (by calling <code class="code">Prelude.output</code>, mutating, and then calling
+    <code class="code">Prelude.input</code>). The solution in this case is to not derive <code class="code">Inputable</code>
+    and <code class="code">Outputable</code> instances, but rather to define a custom <code class="code">Inputable</code> and
+    <code class="code">Outputable</code> instance that copies the underlying values.</p>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar02s08.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar02s10.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">What is the Prelude.eager function and when would I use it?&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;CAL programming tips</td></tr></table></div></body></html>

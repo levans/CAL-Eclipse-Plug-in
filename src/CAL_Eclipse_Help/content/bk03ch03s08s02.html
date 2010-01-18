@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Dynamic typing</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s08.html" title="Advanced topics"><link rel="prev" href="bk03ch03s08s01s04.html" title="Recursion and the stack"><link rel="next" href="bk03ch03s08s03.html" title="CAFs and caching"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Dynamic typing</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s08s01s04.html">Prev</a>&nbsp;</td><th align="center" width="60%">Advanced topics</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s08s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N24A5E"></a>Dynamic typing</h3></div></div></div>
+        
+
+        <p>Most of the time, CAL's type system provides an extremely valuable mechanism for
+        helping to ensure program correctness. However, there are rare occasions where you want to
+        have, for example, a list that can contain different types of data. CAL's type system does
+        not normally allow lists whose elements are not all of the same type. However, by wrapping
+        each value (of whichever type) in a <code class="type">Dynamic</code> value, it is possible to get around
+        this restriction:<div class="informalexample">
+            <pre class="programlisting">processSomeDynamicValues :: Dynamic -&gt; String;
+processSomeDynamicValues v =
+    let
+        intValue = fromDynamicWithDefault v (0 :: Int);
+        stringValue = fromDynamicWithDefault v "";
+        doubleValue = fromDynamicWithDefault v 0.0;
+    in
+        if (intValue != 0) then
+            intToString intValue
+        else if (stringValue != "") then
+            stringValue
+        else if (doubleValue != 0) then
+            doubleToString doubleValue
+        else
+            "unknown Dynamic value";</pre>
+          </div></p>
+
+        <p>With <code class="function">processSomeDynamicValues</code> defined as above, we can evaluate
+        the following expressions:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>processSomeDynamicValues (toDynamic (35 :: Int))</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">"35"</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>map processSomeDynamicValues [toDynamic (16 :: Int), toDynamic 
+"str", toDynamic 1.2, toDynamic 18.0, toDynamic (Just 'C')]</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">["16", "str", "1.2", "18.0", "unknown Dynamic value"]</code></span></p></div>
+          </div></p>
+
+        <p>The <code class="classname">Dynamic</code> module contains a number of functions for creating
+        and inspecting <code class="classname">Dynamic</code> values. The <code class="function">toDynamic</code>
+        function is used to create <code class="type">Dynamic</code> values. It accepts an argument of any
+        <code class="type">Typeable</code> type<sup>[<a href="#ftn.N24AA0" name="N24AA0">6</a>]</sup>, and returns a <code class="type">Dynamic</code> value that wraps that type.</p>
+
+        <p>The <code class="function">fromDynamicWithDefault</code> function is used to extract values
+        from a <code class="type">Dynamic</code> value. It takes two arguments: a <code class="type">Dynamic</code> value, and
+        a default value. It returns the value wrapped by the <code class="type">Dynamic</code> value if the
+        wrapped value is of the same type as the default value. If they are not of the same type,
+        then it returns the default value.</p>
+
+        <p>The other way to extract values from a <code class="type">Dynamic</code> wrapper is using the
+        function <code class="function">fromDynamic</code>. It returns a value of <code class="function">Just v</code>
+        if the <code class="type">Dynamic</code> value wraps the "expected" type, or <code class="function">Nothing</code>
+        otherwise:<div class="informalexample">
+            <pre class="programlisting">unwrapInt :: Dynamic -&gt; Maybe Int;
+unwrapInt v =
+    fromDynamic v;</pre>
+          </div></p>
+
+        <p>With unwrapInt defined as above, we can evaluate the following
+        expressions:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>unwrapInt (toDynamic (50 :: Int))</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Just 50</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>unwrapInt (toDynamic 50.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Nothing</code></span></p></div>
+          </div></p>
+
+        <p>Note that <code class="function">unwrapInt</code> disambiguates the "expected" type by
+        declaring the return type of <code class="function">unwrapInt</code>. When
+        <code class="function">fromDynamic</code> is called, there must always be some way for the compiler
+        to determine the expected return type:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>fromDynamic (toDynamic (50 :: Int)) :: Maybe Int</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Just 50</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>fromDynamic (toDynamic 50.0) :: Maybe Int</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Nothing</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>fromDynamic (toDynamic 50.0) :: Maybe Double</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Just 50.0</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>fromDynamic (toDynamic 50.0)</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">Ambiguous type signature in inferred type 
+(Prelude.Outputable a, Prelude.Typeable a) =&gt; a.</code></span></p></div>
+          </div></p>
+
+        <p>The final expression fails, because the type inferencer has not been given enough
+        information to determine the expected type, and therefore whether the result should be
+        <code class="function">Just 50.0</code> (if <code class="type">Maybe Double</code> is the expected type) or
+        <code class="function">Nothing</code> (if some other type is expected).</p>
+      <div class="footnotes"><br><hr align="left" width="100"><div class="footnote">
+            <p><sup>[<a href="#N24AA0" name="ftn.N24AA0">6</a>] </sup>All non-polymorphic CAL types, and all polymorphic types whose type argument
+            variables are not higher-kinded are automatically instances of the <code class="type">Typeable</code>
+            class.</p>
+          </div></div></div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s08s01s04.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s08.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s08s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Recursion and the stack&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;CAFs and caching</td></tr></table></div></body></html>

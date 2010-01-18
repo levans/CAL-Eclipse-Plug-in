@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>What is plinging? Part 2: plinging of data constructor arguments</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar02.html" title="Effective CAL"><link rel="prev" href="bk02ar02s05.html" title="What is plinging? Part 1: plinging of function arguments"><link rel="next" href="bk02ar02s07.html" title="What is the accumulating parameters coding pattern, and why do I need it?"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">What is plinging? Part 2: plinging of data constructor arguments</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar02s05.html">Prev</a>&nbsp;</td><th align="center" width="60%">Effective CAL</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar02s07.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N2128A"></a>What is plinging? Part 2: plinging of data constructor arguments</h2></div></div></div>
+    
+
+    <p>Another place where plinging is used is in algebraic type definitions. This is a more
+    fundamental concept than plinging of function arguments because plinging of data constructor
+    arguments, unlike plinging of function arguments, can not be inferred by the compiler - it
+    expresses something about the design intent of the type. For example, Haskell supports plinging
+    of data constructor arguments, but not plinging of function arguments (although Haskell
+    indirectly supports the semantic effects of plinging of function arguments via the seq
+    function). Plinging of data constructor arguments is a useful technique for controlling both the
+    space usage of programs during evaluation, as well as the in-memory footprint of already
+    evaluated values.</p>
+
+    <p>Each field of each data constructor within a type can be either plinged or unplinged. For
+    example, in LazyPair, none of the fields are plinged, in StrictPair both fields are plinged, and
+    in FirstStrictPair only the fst field is plinged. <pre class="programlisting">data LazyPair a b =
+    LP
+        fst :: a
+        snd :: b
+    ;
+
+data StrictPair a b =
+    SP
+        fst :: !a
+        snd :: !b
+    ;
+
+data FirstStrictPair a b =
+    FSP
+        fst :: !a
+        snd :: b
+    ;</pre></p>
+
+    <p>Plinging of the fields of a data constructor affects how that data constructor is reduced
+    to WHNF. In particular, when evaluating a data constructor to WHNF, the plinged fields will
+    first themselves be evaluated to WHNF, in the order in which they are declared in the data
+    constructor's definition.</p>
+
+    <p>For example, evaluating<pre class="screen">(LP 7.0 (error "pear")).LP.fst</pre>returns the value
+    7.0 while evaluating<pre class="screen">(SP 7.0 (error "pear")).SP.fst</pre>terminates in an error and
+    displays "<code class="computeroutput">pear</code>" on the console. This is because in the LazyPair
+    case, evaluating the data constructor field selection first causes<pre class="screen">LP 7.0 (error "pear")</pre>to
+    be evaluated to WHNF. It is already in WHNF, and so evaluation can proceed with returning the
+    value of the fst field. However, in the StrictPair case, evaluating<pre class="screen">SP 7.0 (error "pear")</pre>to
+    WHNF first involves evaluating 7.0 to WHNF and then (error "pear") to WHNF. At this point
+    evaluation terminates with the error call.</p>
+
+    <p>Note that if the SP expression above is itself never evaluated to WHNF, then the error
+    call will not occur. For example, the following expression returns 3.0:<pre class="screen">(3.0, SP 7.0 (error "pear")).#1</pre></p>
+
+    <p>One consequence is that when a plinged data constructor is in WHNF, then its plinged
+    fields are also in WHNF. This has the semantic effect that types with plinged fields have fewer
+    values than a similar type with unplinged fields. Plinging data constructor fields is a useful
+    technique for controlling the space usage of a program. For example, it is impossible for an
+    evaluated value of type StrictPair Int Int to hold onto a bulky unevaluated computation in one
+    of its fields, since they must be evaluated to WHNF, which in the case of Int means a simple Int
+    literal value. A similar effect can be had with LazyPair by always constructing its values using
+    a helper function such as lazyPair: <pre class="programlisting">lazyPair !x !y = LazyPair x y;</pre>Since
+    the x and y arguments of lazyPair are plinged, this will do the trick.</p>
+
+    <p>The LazyPair type is very similar to the standard CAL tuple type (a, b). Tuple and record
+    types in CAL always have lazy fields. A similar technique of controlling space usage when
+    constructing CAL tuples is to use a function such as pairStrict, discussed in the previous
+    essay:<pre class="programlisting">pairStrict !x !y = (x, y);</pre></p>
+
+    <p>When a field is plinged, and the declared type of the field is a foreign type (or an
+    enumeration type, which is internally represented as an int), then the storage requirements for
+    evaluated values of the field are much less than if the field were not plinged.</p>
+
+    <p>For example, an evaluated StrictWidget internally holds onto 4 field values with Java
+    types: java.lang.String, int, double, java.lang.Object. An evaluated LazyWidget holds onto 4
+    field values all of Java type org.openquark.cal.machine.CalValue, which is the Java
+    implementation type of the CAL type Prelude.CalValue. If the field values of a LazyWidget value
+    are eventually reduced to WHNF then there will be one level of indirection to values of the
+    underlying Java types mentioned above.<pre class="programlisting">data StrictWidget =
+    SWidget
+        name :: !String
+        id :: !Int
+        price :: !Double
+        other :: !JObject
+    ;
+
+data LazyWidget =
+    LWidget
+        name :: String
+        id :: Int
+        price :: Double
+        other :: JObject
+    ;</pre></p>
+
+    <p>I mentioned above how plinging can affect the set of values that a type can represent.
+    This is especially pronounced in the case of recursively defined algebraic types. For example,
+    shown below are four different list types, varying in their strictness
+    constraints:<pre class="programlisting">data LazyList a = 
+    LNil | 
+    LCons 
+        head :: a
+        tail :: (LazyList a) 
+    deriving Eq, Ord;
+
+data HeadStrictList a =
+    HSNil | 
+    HSCons 
+        head :: !a
+        tail :: (HeadStrictList a) 
+    deriving Eq, Ord;
+
+data TailStrictList a =
+    TSNil | 
+    TSCons 
+        head :: a
+        tail :: !(TailStrictList a) 
+    deriving Eq, Ord;
+
+data StrictList a =
+    SNil | 
+    SCons 
+        head :: !a
+        tail :: !(StrictList a) 
+    deriving Eq, Ord;</pre></p>
+
+    <p>LazyList is essentially identical to CAL's standard list type, Prelude.List. LazyList and
+    Prelude.List perform no evaluation unless needed by a client, and can be used to represent
+    infinite data structures, such as a stream of generated outputs with no preset termination.
+    However, they can be more inefficient if sooner or later all the list elements are
+    evaluated.</p>
+
+    <p>StrictList is similar (but not identical to) CAL's Array type. The similarity lies in that
+    whenever an Array, or StrictList is evaluated to WHNF, then all of its elements are first
+    evaluated to WHNF. In particular, a StrictList can not be used to represent an infinite list in
+    a useful way i.e. such that reduction to WHNF succeeds.</p>
+
+    <p>For example, here are the definitions of 4 infinite lists alternating the elements 1.0 and
+    (error "apple"):<div class="informalexample">
+        <pre class="programlisting">lazyList1 = LCons 1.0 (LCons (error "apple") lazyList1);</pre>
+      </div><div class="informalexample">
+        <pre class="programlisting">headStrictList1 = HSCons 1.0 (HSCons (error "apple") headStrictList1);</pre>
+      </div><div class="informalexample">
+        <pre class="programlisting">tailStrictList1 = TSCons 1.0 (TSCons (error "apple") tailStrictList1);</pre>
+      </div><div class="informalexample">
+        <pre class="programlisting">strictList1 = SCons 1.0 (SCons (error "apple") strictList1);</pre>
+      </div></p>
+
+    <p>Evaluating an expression to extract the first element of lazyList1 or
+    headStrictList1:<pre class="screen">lazyList1.LCons.head
+headStrictList1.HSCons.head
+</pre>both return <code class="computeroutput">1.0</code>.</p>
+
+    <p>Evaluating the third element of lazyList1:<pre class="screen">lazyList1.LCons.tail.LCons.tail.LCons.head</pre>also
+    returns <code class="computeroutput">1.0</code>.</p>
+
+    <p>However, evaluating the third element of headStrictList1:<pre class="screen">headStrictList1.HSCons.tail.HSCons.tail.HSCons.head</pre>terminates
+    in an error, displaying "apple" on the console. This is because during the list traversal, when
+    unpacking the second HSCons node, the head field is evaluated, resulting in the call to error
+    since the second element is (error "apple").</p>
+
+    <p>Evaluating an expression to extract the first element of strictList1:<pre class="screen">strictList1.TSCons.head</pre>terminates
+    in an error at the reduction point when the second element value is evaluated, displaying
+    "apple" on the console.</p>
+
+    <p>However, evaluating an expression to extract the first element of tailStrictList<pre class="screen">tailStrictList1.TSCons.head</pre>does
+    not terminate in an error, since elements of the list itself are never evaluated. However, it
+    does hang (eventually resulting in a java.lang.StackOverflowError). This is because the infinite
+    list must be fully expanded out (without its values being evaluated) before the head value can
+    be returned.</p>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar02s05.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar02s07.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">What is plinging? Part 1: plinging of function arguments&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;What is the accumulating parameters coding pattern, and why do I need it?</td></tr></table></div></body></html>

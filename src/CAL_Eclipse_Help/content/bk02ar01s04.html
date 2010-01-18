@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>CAL syntax examples</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="prev" href="bk02ar01s03.html" title="CAL performance"><link rel="next" href="bk02ar01s05.html" title="Legal Notice"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">CAL syntax examples</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar01s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">CAL for Haskell Programmers</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar01s05.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N20D26"></a>CAL syntax examples</h2></div></div></div>
+    
+
+    <p>Below are several code examples to illustrate some of the syntax of
+    CAL for someone familiar with Haskell. They are taken from the Standard
+    CAL libraries, although often with some condensation for purposes of
+    clearer exposition.</p>
+
+    <div class="orderedlist"><ol type="a"><li>
+        <p>
+          <b>Declaration of the List.map function.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">This example shows the use of case expressions, type
+          declarations, as well as some of the syntactic sugar for the List
+          type. The usage of semicolons is different from Haskell and
+          whitespace is not significant.<pre class="programlisting">map :: (a -&gt; b) -&gt; [a] -&gt; [b];
+public map mapFunction !list =
+    case list of
+    []     -&gt; [];
+    listHead : listTail -&gt; 
+        mapFunction listHead : map mapFunction listTail;
+    ;</pre>
+        </p>
+      </li><li>
+        <p>
+          <b>Declaration of the List.length function.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Shows the use of the accumulating parameters pattern in the
+          declaration of the local function lengthHelper, as well as plinging
+          on the acc argument to make the function use constant
+          space.<pre class="programlisting">length :: [a] -&gt; Int;
+public length !list =
+    let
+        lengthHelper :: Int -&gt; [a] -&gt; Int;
+        lengthHelper !acc !list =
+            case list of
+            [] -&gt; acc;
+            listHead : listTail -&gt; lengthHelper (acc + 1) listTail;
+            ;
+    in  
+        lengthHelper 0 list;</pre>
+        </p>
+      </li><li>
+        <p>
+          <b>Declaration of the outputListWith function.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">This function converts a value of the CAL List type to a value
+          of the CAL JList type. The JList type is a foreign type whose
+          implementation type is the Java type java.lang.List. There are
+          foreign type declarations for the JObject and JList types, as well
+          as foreign function declarations for jArrayList_new and jList_add.
+          Notice that the implementation of outputListWith mutates a Java list
+          object, but the resulting function outputListWith is still a pure
+          function.
+        </p>
+
+        <p>This example also includes some CALDoc that provides end-user
+        documentation of the outputListWith function. <pre class="programlisting">/**
+ * Converts a CAL list to a Java list using the element mapping function {@code f@} of type {@code a -&gt; {@link JObject@}@} 
+ * to convert elements of the CAL list.
+ * 
+ * @arg list the CAL list.
+ * @arg f the mapping function converting elements of the list to {@link JObject@} values.
+ * @return the corresponding {@code JList@}.
+ */
+outputListWith :: [a] -&gt; (a -&gt; JObject) -&gt; JList;
+public outputListWith !list f =           
+    let  
+        javaList :: JList;
+        javaList = jArrayList_new;
+                                              
+        outputListWithHelper :: [a] -&gt; (a -&gt; JObject) -&gt; JList -&gt; JList;    
+        outputListWithHelper !list elementMappingFunction !javaList =
+            case list of
+            [] -&gt; javaList;
+            x : xs -&gt; 
+                if (jList_add javaList (elementMappingFunction x)) then
+                    outputListWithHelper xs elementMappingFunction javaList
+                else
+                    error "Adding an element to a Java list failed.";                     
+            ;
+    in  
+        outputListWithHelper list f javaList;   
+
+data foreign unsafe import jvm public "java.lang.Object"
+    public JObject deriving Inputable, Outputable;
+data foreign unsafe import jvm public "java.util.List"
+   public JList deriving Inputable, Outputable;
+foreign unsafe import jvm "constructor java.util.ArrayList"
+    private jArrayList_new :: JList;
+foreign unsafe import jvm "method add"
+    private jList_add :: JList -&gt; JObject -&gt; Boolean;
+</pre></p>
+      </li><li>
+        <p>
+          <b>Declaration of the Maybe, Either and TypeRep algebraic data
+          types.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Field names (such as "value") below are required in the data
+          declaration. Unlike in Haskell, field names do not occupy the
+          function namespace, and can be repeated within a module. Field names
+          can be repeated within a single data declaration (such as
+          "typeConsName" below) for a different data constructor, even when
+          they have different types.<pre class="programlisting">data public Maybe a =       
+    public Nothing |    
+    public Just 
+        value :: a 
+    deriving Eq, Ord;
+
+data public Either a b =     
+    public Left 
+        value :: a |   
+    public Right 
+        value :: b       
+    deriving Eq, Ord;
+
+data public TypeRep =    
+    protected TypeRep 
+        typeConsName :: !String 
+        argTypes :: ![TypeRep] |
+    
+    protected FunctionTypeRep 
+        domainType :: !TypeRep 
+        codomainType :: !TypeRep |
+
+    protected ListTypeRep 
+        elementType :: !TypeRep |    
+    
+    protected UnitTypeRep |
+    
+    protected ForeignTypeRep
+        typeConsName :: !String
+   
+    deriving Eq;
+    ;</pre>
+        </p>
+      </li><li>
+        <p>
+          <b>Syntax for pattern matching.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Here are some examples of pattern matching syntax in CAL. It
+          shows the various syntactic shortcuts that are available for
+          extracting the fields of a data constructor. <div class="informalexample">
+              <p>This example shows traditional position-based case
+              extraction. Instead of pattern variable args one could use an
+              underscore ("_") to indicate an unused field value.</p>
+
+              <p><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>case typeOf (Just 'a') of TypeRep name args -&gt; name;
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"Prelude.Maybe"</code></span></p></div></p>
+            </div><div class="informalexample">
+              <p>An example of field name based case extraction. One can
+              name a subset of the field names of the TypeRep data
+              constructor. In particular, if the TypeRep data constructor
+              added additional fields, this code would not need to be updated.
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>case typeOf (Just 'a') of TypeRep {typeConsName} -&gt; typeConsName;
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"Prelude.Maybe"</code></span></p></div></p>
+            </div><div class="informalexample">
+              <p>Here are some examples of data constructor field selection
+              using the "." operator. <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(Left "pear" :: Either String Double).Left.value
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"pear"</code></span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(Just "apple").Just.value
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"apple"</code></span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(typeOf (undefined :: JList)).ForeignTypeRep.typeConsName
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"Prelude.JList"</code></span></p></div></p>
+            </div>
+        </p>
+      </li><li>
+        <p>
+          <b>The Appendable type class.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">The Appendable type class is similar to the Monoid type class
+          in Haskell. Note that the concat class method has a default
+          implementation.<pre class="programlisting">public class Appendable a where    
+    public empty :: a;        
+    public isEmpty :: a -&gt; Boolean;
+    public append :: a -&gt; a -&gt; a;    
+    public concat :: [a] -&gt; a
+        default concatDefault;
+    ;
+
+instance Appendable [a] where
+    empty = emptyList; 
+    isEmpty = isEmptyList;  
+    append = appendList;
+    concat = concatList;    
+    ;
+    
+instance Appendable String where
+    empty = emptyString;  
+    isEmpty = isEmptyString;
+    append = appendString;
+    concat = concatString;
+    ;</pre>
+        </p>
+
+        <div class="informalexample">
+          <p>Here are a few sample expressions. The operator form of append
+          is ++. Note also the use of the append class method in infix form
+          using back-quotes (as in Haskell).<div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>"peat" ++ "bog"</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">"peatbog"</code></span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>"peat" `append` "bog"</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">"peatbog"</code></span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>[3 :: Int, 1, 4] ++ [1, 5]
+</code></strong><span class="bold-italic">returns</span>
+<code class="computeroutput">[3, 1, 4, 1, 5]</code></span></p></div></p>
+        </div>
+      </li><li>
+        <p>
+          <b>Monad and Sequence type classes.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Here are some examples of some of the more interesting type
+          class definitions possible in CAL. The Monad type class involves a
+          declaration for a higher kinded type variable m. In addition, there
+          is a superclass constraint in that Functor is a superclass of
+          Monad.
+        </p>
+
+        <p>The Sequence type class can be used to abstract functionality
+        over, for example, the List and Array types. Notice the additional
+        constraints on the sort and concat class methods. <pre class="programlisting">public class Functor m =&gt; Monad m where
+    public bind :: m a -&gt; (a -&gt; m b) -&gt; m b;    
+    public anonymousBind :: m a -&gt; m b -&gt; m b; 
+    public return :: a -&gt; m a;
+    ;
+
+class Sequence c where
+    length :: c a -&gt; Int;
+    subscript :: c a -&gt; Int -&gt; a;     
+    sort :: Ord a =&gt; c a -&gt; c a;
+    concat :: Prelude.Appendable a =&gt; c a -&gt; a;
+    ;
+    
+instance Sequence Prelude.List where ...
+instance Sequence Array.Array where ...</pre></p>
+      </li><li>
+        <p>
+          <b>Tuples and records.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Tuples in CAL are simply records with ordinal field names #1,
+          #2, #3, .... <div class="informalexample">
+              <p>For example, the following 3 tuples are all the same:
+              <div class="literallayout"><p><span style="white-space: pre;"><code class="code">("Anton", 3.0, True)</code>
+<code class="code">{#1 = "Anton", #2 = 3.0, #3 = True}</code>
+<code class="code">{#2 = 3.0, #3 = True, #1 = "Anton"}</code></span></p></div></p>
+            </div><div class="informalexample">
+              <p>Textual field names are also permitted, so the following
+              is also a valid record: <div class="literallayout"><p><span style="white-space: pre;"><code class="code">{name = "Anton", occupation = "toddler", #99 = [Just 2.0, Nothing]}</code></span></p></div></p>
+            </div> <div class="informalexample">
+              <p>The record selection operator is the dot: <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>("Anton", 3.0, True).#1
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"Anton"</code></span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>{name = "Anton", occupation = "toddler"}.occupation
+</code></strong><span class="bold-italic">returns</span><code class="computeroutput">
+"toddler"</code></span></p></div></p>
+            </div><div class="informalexample">
+              <p>Record extension is supported with special syntax or just
+              using a record case expression:<div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>{("Anton", 3.0) | toys = True}</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">{#1 = "Anton", #2 = 3.0, toys = True}</code> 
+</span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>case ("Anton", 3.0) of (f1, f2) -&gt; {#1 = f1, #2 = f2, toys = True};</code></strong> 
+<span class="bold-italic">returns</span><code class="computeroutput">
+{#1 = "Anton", #2 = 3.0, toys = True}</code></span></p></div></p>
+            </div><div class="informalexample">
+              <p>Record update is also supported with special syntax or
+              just using a record case expression:</p>
+
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>{("Anton", 10.0) | #2 := 11.0}</code></strong>
+<span class="bold-italic">returns</span><code class="computeroutput">
+("Anton", 11.0)</code></span></p></div>
+
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>case ("Anton", 10.0) of (f1, _) -&gt; (f1, 11.0);</code></strong>
+<span class="bold-italic">returns</span><code class="computeroutput">
+("Anton", 11.0)</code> </span></p></div>
+            </div><div class="informalexample">
+              <p>Records in CAL support polymorphic record extension. For
+              example, using the <code class="function">field1</code> function to
+              extract the #1 field of a record works on any record with a #1
+              field: <pre class="programlisting">field1 :: r\#1 =&gt; {r | #1 :: a} -&gt; a;
+public field1 !r = r.#1;</pre><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>field1 ("pear", 2.0, Just 'a')</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">"pear"</code></span></p></div><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>field1 {#1 = "fig", size = 100.0}</code></strong>
+<span class="bold-italic">returns</span><code class="computeroutput">
+"fig"</code></span></p></div></p>
+            </div><div class="informalexample">
+              <p>Finally, note that records can be instances of type
+              classes. For example, all records are instances of the Eq, Ord,
+              Show and Typeable type classes provided that their field types
+              are also instances of these classes.</p>
+
+              <p>So for example:<div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>sort [([1.0, 3.0], Just 'b'), ([1.0, 3.0], Just 'a'), ([1.0, 2.0], Just 'b'), 
+      ([1.0, 2.0], Just 'a')]</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">[([1.0, 2.0], Just 'a'), ([1.0, 2.0], Just 'b'), ([1.0, 3.0], Just 'a'),
+ ([1.0, 3.0], Just 'b')]</code></span></p></div></p>
+            </div>This example shows how records as well as the
+          List, Char, Double and Maybe types are instances of the Eq and Ord
+          type classes. Note that in the case of List and Maybe these are
+          derived instance declarations. In the case of the record type we
+          call the instance declarations universal record instance
+          declarations. For example, there is an instance: <pre class="programlisting">instance Eq r =&gt; Eq {r} where ...</pre>where
+          the constraint implies that a record is an instance of Eq provided
+          that any field also has a type that is an instance of Eq.
+        </p>
+      </li><li>
+        <p>
+          <b>Exception support.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Here is an example showing a function throwing a CAL value of
+          a record-type as an exception, catching it, and then doing some
+          simple manipulations:<pre class="programlisting">//tests using various Cal types as Exception types, including the interesting case of records
+calThrownException5 =
+    throw ("abc", 1 :: Int, 2 :: Integer, ["abc", "def"], Just (20 :: Int))
+    `catch`
+    (
+        let
+            handler :: (String, Int, Integer, [String], Maybe Int) -&gt; String;
+            handler r = show (r.#5, r.#4, r.#3, r.#2, r.#1);
+        in
+            handler
+    );
+
+//evaluates to True
+testCalThrownException5 =
+    calThrownException5 == "(Prelude.Just 20, [\"abc\", \"def\"], 2, 1, \"abc\")";
+
+instance Exception String where;
+instance Exception Int where;
+instance Exception Integer where;
+instance Exception a =&gt; Exception (Maybe a) where;
+instance Exception a =&gt; Exception [a] where;
+instance Exception r =&gt; Exception {r} where;</pre>
+        </p>
+      </li><li>
+        <p>
+          <b>Debugging support.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">CAL has a variety of features supporting debugging. This is a
+          short overview of one such feature, the showInternal
+          function.
+        </p>
+
+        <p>The showInternal function is useful for seeing to what extent a
+        lazy value has been evaluated, without in the process affecting the
+        evaluation. Here is an example showing that the showInternal function
+        does not force evaluation of its argument: <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>showInternal (Just 2.0).Just.value</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">"(Prelude.Just 2.0).Prelude.Just.value"</code></span></p></div>
+        Sharing is shown for nodes with children: <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>showInternal (let x = Just 'a'; in (x, x))</code></strong>
+<span class="bold-italic">returns</span><code class="computeroutput">
+"(&lt;@1 = (Prelude.Just a)&gt;, &lt;@1&gt;)"</code></span></p></div><div class="informalexample">
+            <p>The following expression shows an interesting example of
+            sharing in one of the standard educational definitions of the
+            Fibonacci numbers. Notice the @1 and @2 tags in the returned
+            value. These show the sharing that is occurring in the graph.
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>let fibs = 1 : 1 : List.zipWith Prelude.add fibs (List.tail fibs) :: [Integer];
+ in (deepSeq (take 7 fibs) (showInternal fibs))</code></strong>
+<span class="bold-italic">returns</span>
+<code class="computeroutput">"(Prelude.Cons 1 (Prelude.Cons 1 (Prelude.Cons 2 (Prelude.Cons 3 (Prelude.Cons 
+5 &lt;@1 = (Prelude.Cons 8 &lt;@2 = (Prelude.Cons 13 (List.zipWith Prelude.addInteger
+&lt;@1&gt; &lt;@2&gt;))&gt;)&gt;)))))"</code></span></p></div></p>
+          </div></p>
+      </li></ol></div>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar01s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar01.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar01s05.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">CAL performance&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Legal Notice</td></tr></table></div></body></html>

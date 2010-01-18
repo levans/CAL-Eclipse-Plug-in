@@ -1,0 +1,2020 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<!--
+ *******************************************************************************
+ * Copyright (c) 2006 Business Objects Software Limited and others.
+ * All rights reserved. 
+ * This file is made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Business Objects Software Limited - initial API and implementation based on Eclipse 3.1.2 code for
+ *                             /org.eclipse.jdt.ui/plugin.xml
+ *                           Eclipse source is available at: http://www.eclipse.org/downloads/
+ *******************************************************************************
+ -->
+<plugin>
+<!-- =================================================================================== -->
+<!-- Extension: CAL Nature Image                                                         -->
+<!-- =================================================================================== -->
+<!-- 
+     Note: currently the Eclipse UI only supports one project nature icon overlay.
+     So if a project has both Java and CAL natures, the Java icon will probably be displayed 
+     since its nature comes first in the list.
+  -->
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="$nl$/icons/full/ovr16/cal_ovr.gif"
+            natureId="org.openquark.cal.eclipse.core.calNature"
+            id="org.openquark.cal.eclipse.ui.calProjectNatureImage">
+      </image>
+   </extension>
+   
+<!-- =================================================================================== -->
+<!-- Extension: Popup menus                                                              -->
+<!-- =================================================================================== -->
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.openquark.cal.eclipse.core.contribution1"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               label="%org.openquark.cal.eclipse.ui.tools"
+               id="org.openquark.cal.eclipse.ui.project.tools">
+            <separator
+               name="group0">
+            </separator>
+         </menu>
+         <visibility>
+            <not>
+               <or>
+                  <objectState 
+                     name="projectNature" 
+                     value="org.openquark.cal.eclipse.core.calNature"/>
+                  <objectState
+                     name="open"
+                     value="false"/>
+               </or>
+            </not>
+         </visibility>
+
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.ToggleNatureAction"
+               enablesFor="+"
+               id="org.openquark.cal.eclipse.ui.addRemoveNatureAction"
+               label="%popupMenus.addNature.label"
+               menubarPath="org.openquark.cal.eclipse.ui.project.tools/group0">
+         </action>
+      </objectContribution>
+
+      <objectContribution
+            adaptable="true"
+            id="org.openquark.cal.eclipse.core.contribution1"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               label="%org.openquark.cal.eclipse.ui.tools"
+               id="org.openquark.cal.eclipse.ui.project.tools">
+            <separator
+               name="group0">
+            </separator>
+         </menu>
+         <filter
+               name="projectNature"
+               value="org.openquark.cal.eclipse.core.calNature">
+         </filter>
+
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.ToggleNatureAction"
+               enablesFor="+"
+               id="org.openquark.cal.eclipse.ui.addRemoveNatureAction"
+               label="%popupMenus.removeNature.label"
+               menubarPath="org.openquark.cal.eclipse.ui.project.tools/group0">
+         </action>
+      </objectContribution>
+      
+      <viewerContribution
+             targetID="calConsole.#ContextMenu"
+             id="org.openquark.cal.eclipse.debug.ui.calConsoleContextMenu">
+          <action
+                class="org.openquark.cal.eclipse.ui.console.TerminateConsoleExecutionAction"
+                definitionId="org.openquark.cal.eclipse.ui.console.terminateexecution"
+                helpContextId="terminate_console_execution_action_context"
+                icon="$nl$/icons/stop.gif"
+                id="org.openquark.cal.eclipse.ui.console.TerminateConsoleExecutionAction"
+                label="%TerminateConsoleExecutionAction.name"
+                menubarPath="additions"
+                tooltip="%TerminateConsoleExecutionAction.tooltip"/>
+       </viewerContribution>
+      
+   </extension>
+   
+      <extension point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.openquark.cal.eclipse.embedded.contribution"
+            nameFilter="*.cal"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.RenameViewAction"
+               enablesFor="1"
+               id="org.eclipse.jdt.ui.actions.Rename"
+               label="Rename CAL Module..."
+               menubarPath="org.eclipse.jdt.ui.refactoring.menu/reorgGroup"
+               >
+         </action>
+      </objectContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="#CALRulerContext"
+            id="org.openquark.cal.eclipse.ui.CALEditorPopupActions">
+         <action
+               label="%AddTask.label"
+               helpContextId="org.eclipse.ui.AddTask_action_context"
+               tooltip="%AddTask.tooltip"
+               class="org.eclipse.ui.texteditor.TaskRulerAction"
+               menubarPath="add"
+               id="org.eclipse.ui.texteditor.TaskRulerAction">
+         </action>
+         <action
+               label="%AddBookmark.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               tooltip="%AddBookmark.tooltip"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               menubarPath="add"
+               id="org.eclipse.ui.texteditor.BookmarkRulerAction">
+         </action>
+       </viewerContribution>
+          <!-- Function -->
+          <objectContribution
+                adaptable="false"
+                id="org.openquark.cal.eclipse.ui.rename.function"
+                objectClass="org.openquark.cal.compiler.Function">
+            
+             <menu
+                   label="%Refactoring.menu.label"
+                   id="org.openquark.cal.eclipse.ui.caleditor.outline.refactor">
+                <separator name="group0"/>
+             </menu>
+            
+             <action
+               class="org.openquark.cal.eclipse.ui.actions.RenameViewAction"
+               id="org.openquark.cal.eclipse.ui.rename.function"
+               label="%Refactoring.renameAction.label"
+               menubarPath="org.openquark.cal.eclipse.ui.caleditor.outline.refactor/group0"/>
+          </objectContribution>
+          <objectContribution
+                adaptable="false"
+                id="org.openquark.cal.eclipse.ui.rename.function"
+                objectClass="org.openquark.cal.compiler.ModuleName">
+            
+             <menu
+                   label="%Refactoring.menu.label"
+                   id="org.openquark.cal.eclipse.ui.caleditor.outline.refactor">
+                <separator name="group0"/>
+             </menu>
+            
+             <action
+               class="org.openquark.cal.eclipse.ui.actions.RenameViewAction"
+               id="org.openquark.cal.eclipse.ui.rename.function"
+               label="%Refactoring.renameAction.label"
+               menubarPath="org.openquark.cal.eclipse.ui.caleditor.outline.refactor/group0"/>
+          </objectContribution>
+          <!-- Type Constructor -->    
+          <objectContribution
+                adaptable="false"
+                id="org.openquark.cal.eclipse.ui.rename.typeConstructor"
+                objectClass="org.openquark.cal.compiler.TypeConstructor">
+            
+             <menu
+                   label="%Refactoring.menu.label"
+                   id="org.openquark.cal.eclipse.ui.caleditor.outline.refactor">
+                <separator name="group0"/>
+             </menu>
+            
+             <action
+               class="org.openquark.cal.eclipse.ui.actions.RenameViewAction"
+               id="org.openquark.cal.eclipse.ui.rename.typeConstructor"
+               label="%Refactoring.renameAction.label"
+               menubarPath="org.openquark.cal.eclipse.ui.caleditor.outline.refactor/group0"/>
+          </objectContribution>
+          <!-- Type Class -->
+          <objectContribution
+                adaptable="false"
+                id="org.openquark.cal.eclipse.ui.rename.typeClass"
+                objectClass="org.openquark.cal.compiler.TypeClass">
+            
+             <menu
+                   label="%Refactoring.menu.label"
+                   id="org.openquark.cal.eclipse.ui.caleditor.outline.refactor">
+                <separator name="group0"/>
+             </menu>
+            
+             <action
+               class="org.openquark.cal.eclipse.ui.actions.RenameViewAction"
+               id="org.openquark.cal.eclipse.ui.rename.typeClass"
+               label="%Refactoring.renameAction.label"
+               menubarPath="org.openquark.cal.eclipse.ui.caleditor.outline.refactor/group0"/>
+          </objectContribution>
+          <!-- Data Constructor -->
+          <objectContribution
+                adaptable="false"
+                id="org.openquark.cal.eclipse.ui.rename.dataConstructor"
+                objectClass="org.openquark.cal.compiler.DataConstructor">
+            
+             <menu
+                   label="%Refactoring.menu.label"
+                   id="org.openquark.cal.eclipse.ui.caleditor.outline.refactor">
+                <separator name="group0"/>
+             </menu>
+            
+             <action
+               class="org.openquark.cal.eclipse.ui.actions.RenameViewAction"
+               id="org.openquark.cal.eclipse.ui.rename.dataConstructor"
+               label="%Refactoring.renameAction.label"
+               menubarPath="org.openquark.cal.eclipse.ui.caleditor.outline.refactor/group0"/>
+          </objectContribution>
+          
+      <!-- END RENAME ACTIONS -->
+
+      <!-- BEGIN METADATA EDITING ACTIONS -->
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.metadataEditor.module"
+            objectClass="org.openquark.cal.compiler.ModuleName">
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.EditMetadataAction"
+               id="org.openquark.cal.eclipse.ui.metadataEditor.module"
+               label="Edit Module Metadata"
+               menubarPath="additions"/>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.metadataEditor.function"
+            objectClass="org.openquark.cal.compiler.Function">
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.EditMetadataAction"
+               id="org.openquark.cal.eclipse.ui.metadataEditor.function"
+               label="Edit Function Metadata"
+               menubarPath="additions"/>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.metadataEditor.typeConstructor"
+            objectClass="org.openquark.cal.compiler.TypeConstructor">
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.EditMetadataAction"
+               id="org.openquark.cal.eclipse.ui.metadataEditor.typeConstructor"
+               label="Edit Type Metadata"
+               menubarPath="additions"/>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.metadataEditor.dataConstructor"
+            objectClass="org.openquark.cal.compiler.DataConstructor">
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.EditMetadataAction"
+               id="org.openquark.cal.eclipse.ui.metadataEditor.dataConstructor"
+               label="Edit Constructor Metadata"
+               menubarPath="additions"/>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.metadataEditor.typeClass"
+            objectClass="org.openquark.cal.compiler.TypeClass">
+         <action
+               class="org.openquark.cal.eclipse.ui.actions.EditMetadataAction"
+               id="org.openquark.cal.eclipse.ui.metadataEditor.typeClass"
+               label="Edit Class Metadata"
+               menubarPath="additions"/>
+      </objectContribution>
+      <!-- END METADATA EDITING ACTIONS -->
+
+      <!-- BEGIN RUN ACTIONS -->
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.runInConsole.functionalAgent"
+            objectClass="org.openquark.cal.compiler.FunctionalAgent">
+         <action
+               class="org.openquark.cal.eclipse.ui.console.RunInConsoleAction"
+               id="org.openquark.cal.eclipse.ui.console.RunInConsoleAction.function"
+               label="Run In Console"
+               menubarPath="additions"/>
+      </objectContribution>
+
+      <objectContribution
+            adaptable="false"
+            id="org.openquark.cal.eclipse.ui.openInConsole.module"
+            objectClass="org.openquark.cal.compiler.ModuleName">
+         <action
+               class="org.openquark.cal.eclipse.ui.console.OpenInConsoleAction"
+               id="org.openquark.cal.eclipse.ui.console.OpenInConsoleAction.function"
+               label="Open In Console"
+               menubarPath="additions"/>
+      </objectContribution>
+
+   </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: Editor Actions                                                           -->
+<!-- =================================================================================== -->
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            targetID="org.openquark.cal.eclipse.ui.CALEditor"
+            id="org.eclipse.ui.texteditor.ruler.actions">
+         <action
+               label="%BookmarkRulerAction.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               actionID="RulerDoubleClick"
+               id="org.eclipse.ui.texteditor.BookmarkRulerAction">
+         </action>
+         
+       <!--
+         <action
+               label="%JavaSelectRulerAction.label"
+               class="org.eclipse.jdt.internal.ui.javaeditor.JavaSelectRulerAction"
+               actionID="RulerClick"
+               id="org.eclipse.jdt.internal.ui.javaeditor.JavaSelectRulerAction">
+         </action>
+         -->
+         <action
+               label="%CALSelectRulerAction.label"
+               class="org.eclipse.ui.texteditor.SelectRulerAction"
+               actionID="RulerClick"
+               id="org.eclipse.ui.texteditor.SelectRulerAction">
+         </action>
+      </editorContribution>
+   </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: Editors                                                                  -->
+<!-- =================================================================================== -->
+   <extension
+         id="caleditor"
+         point="org.eclipse.ui.editors">
+      <!-- 
+        TODOEL: 
+          1) specify an icon.
+          2) use a real symbolic font name?
+            symbolicFontName="org.openquark.cal.eclipse.ui.editors.textfont"
+        -->
+      <editor
+            name="%CALEditor.label"
+            default="true"
+            icon="$nl$/icons/calfile.png"
+            contributorClass="org.openquark.cal.eclipse.ui.caleditor.CALEditorActionContributor"
+            class="org.openquark.cal.eclipse.ui.caleditor.CALEditor"
+            id="org.openquark.cal.eclipse.ui.CALEditor">
+            <contentTypeBinding
+               contentTypeId="org.openquark.cal.eclipse.core.calSource"
+            /> 
+      </editor>
+      <editor
+            class="org.openquark.cal.eclipse.ui.metadataeditor.CALMetadataEditor"
+            default="false"
+            icon="$nl$/icons/calfile.png"
+            id="org.openquark.cal.eclipse.ui.metadataeditor.CALMetadataEditor"
+            name="CAL Metadata Editor"/>
+      <!-- ========================================================= -->
+      <!-- Other editors may be defined here (eg.a metadata editor). -->
+      <!-- ========================================================= -->
+      
+   </extension>
+   
+<!-- =================================================================================== -->
+<!-- Extension: Preference Pages                                                         -->
+<!-- =================================================================================== -->
+<!-- TODOEL: add keywords to pages. -->
+   <extension point="org.eclipse.ui.preferencePages">
+      <page
+            name="%calPrefName"
+            class="org.openquark.cal.eclipse.ui.preferences.CALBasePreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.CALBasePreferencePage">
+         <keywordReference id="org.openquark.cal.eclipse.ui.general"/>
+      </page>
+      <page
+            name="%calBuildPrefName"
+            category="org.openquark.cal.eclipse.ui.preferences.CALBasePreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.CALBuildPreferencePage"
+            id="org.openquark.cal.eclipse.ui.CALBuildPreferencePage">
+            <keywordReference id="org.openquark.cal.eclipse.ui.building"/>
+      </page>
+      <!--
+      <page
+            name="%todoTaskPrefName"
+            category="org.openquark.cal.eclipse.ui.CALBuildPreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.TodoTaskPreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.TodoTaskPreferencePage">
+            <keywordReference id="org.openquark.cal.eclipse.ui.todo"/>
+      </page>
+      -->
+      <page
+            name="%editorPrefName"
+            category="org.openquark.cal.eclipse.ui.preferences.CALBasePreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage">
+            <keywordReference id="org.openquark.cal.eclipse.ui.caleditor"/>
+      </page>
+      <page
+            name="%editorSyntaxColoringPage"
+            category="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.CALEditorColoringPreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.CALEditorColoringPreferencePage">
+         <keywordReference id="org.openquark.cal.eclipse.ui.syntaxcoloring"/>
+      </page>
+      <page
+            name="%editorContentAssistPage"
+            category="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.CALEditorContentAssistPage"
+            id="org.openquark.cal.eclipse.ui.preferences.CALEditorContentAssistPage">
+         <keywordReference id="org.openquark.cal.eclipse.ui.content.assist"/>
+      </page>
+      <page
+            name="%tabKeyPageName"
+            category="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.TabKeyPreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.TabKeyPreferencePage">
+         <keywordReference id="org.openquark.cal.eclipse.ui.caleditor"/>
+      </page>
+      <page
+            name="%editorTypingPage"
+            category="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.SmartTypingPreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.SmartTypingPreferencePage">
+         <keywordReference id="org.openquark.cal.eclipse.ui.smarttyping"/>
+      </page>
+      <page
+            category="org.openquark.cal.eclipse.ui.preferences.CALEditorPreferencePage"
+            class="org.openquark.cal.eclipse.ui.preferences.CALTemplatePreferencePage"
+            id="org.openquark.cal.eclipse.ui.preferences.TemplatePreferencePage"
+            name="%editorTemplatePage">
+         <keywordReference
+               id="org.openquark.cal.eclipse.ui.template">
+         </keywordReference>
+      </page>
+   </extension>
+   
+<!-- =================================================================================== -->
+<!-- Extension: Preferences                                                              -->
+<!-- =================================================================================== -->
+   <extension point="org.eclipse.core.runtime.preferences">
+      <initializer class="org.openquark.cal.eclipse.ui.preferences.CALUIPreferenceInitializer"/>
+   </extension>
+<!-- =========================================================================== -->
+<!-- Keywords                                                                    -->
+<!-- =========================================================================== -->
+
+<!-- These are used by the preferences dialog to filter displayed pages when typing into the combo box.-->
+   <extension point="org.eclipse.ui.keywords">
+      <keyword
+            label="%preferenceKeywords.general"
+            id="org.openquark.cal.eclipse.ui.general"/>
+      <keyword
+            label="%preferenceKeywords.appearance"
+            id="org.openquark.cal.eclipse.ui.appearance"/>
+      <keyword
+            label="%preferenceKeywords.sortorder"
+            id="org.openquark.cal.eclipse.ui.sortorder"/>
+      <keyword
+            label="%preferenceKeywords.typefilter"
+            id="org.openquark.cal.eclipse.ui.typefilter"/>
+      <keyword
+            label="%preferenceKeywords.buildpathoptions"
+            id="org.openquark.cal.eclipse.ui.buildpathoptions"/>
+      <keyword
+            label="%preferenceKeywords.buildpath"
+            id="org.openquark.cal.eclipse.ui.buildpath"/>      
+      <keyword
+            label="%preferenceKeywords.cpvars"
+            id="org.openquark.cal.eclipse.ui.cpvars"/>
+      <keyword
+            label="%preferenceKeywords.userlibs"
+            id="org.openquark.cal.eclipse.ui.userlibs"/>
+      <keyword
+            label="%preferenceKeywords.codestyle"
+            id="org.openquark.cal.eclipse.ui.codestyle"/>
+      <keyword
+            label="%preferenceKeywords.codetemplates"
+            id="org.openquark.cal.eclipse.ui.codetemplates"/>
+      <keyword
+            label="%preferenceKeywords.formatter"
+            id="org.openquark.cal.eclipse.ui.formatter"/>      
+      <keyword
+            label="%preferenceKeywords.organizeimports"
+            id="org.openquark.cal.eclipse.ui.organizeimports"/>
+      <keyword
+            label="%preferenceKeywords.compliance"
+            id="org.openquark.cal.eclipse.ui.compliance"/>      
+      <keyword
+            label="%preferenceKeywords.building"
+            id="org.openquark.cal.eclipse.ui.building"/>
+      <keyword
+            label="%preferenceKeywords.severities"
+            id="org.openquark.cal.eclipse.ui.severities"/>      
+      <keyword
+            label="%preferenceKeywords.javadocproblems"
+            id="org.openquark.cal.eclipse.ui.javadocproblems"/>   
+      <keyword
+            label="%preferenceKeywords.todo"
+            id="org.openquark.cal.eclipse.ui.todo"/>            
+      <keyword
+            label="%preferenceKeywords.javaeditor"
+            id="org.openquark.cal.eclipse.ui.javaeditor"/>      
+      <keyword
+            label="%preferenceKeywords.codeassist"
+            id="org.openquark.cal.eclipse.ui.codeassist"/>   
+      <keyword
+            label="%preferenceKeywords.hover"
+            id="org.openquark.cal.eclipse.ui.hover"/>
+      <keyword
+            label="%preferenceKeywords.syntaxcoloring"
+            id="org.openquark.cal.eclipse.ui.syntaxcoloring"/>   
+      <keyword
+            label="%preferenceKeywords.templates"
+            id="org.openquark.cal.eclipse.ui.templates"/>
+      <keyword
+            label="%preferenceKeywords.propertieseditor"
+            id="org.openquark.cal.eclipse.ui.propertieseditor"/>
+      <keyword
+            label="%preferenceKeywords.folding"
+            id="org.openquark.cal.eclipse.ui.folding"/>
+      <keyword
+            label="%preferenceKeywords.markoccurrences"
+            id="org.openquark.cal.eclipse.ui.markoccurrences"/>
+      <keyword
+            label="%preferenceKeywords.smarttyping"
+            id="org.openquark.cal.eclipse.ui.smarttyping"/>
+      <keyword
+            label="%preferenceKeywords.linkedmode"
+            id="org.openquark.cal.eclipse.ui.linkedmode"/>
+   </extension>  
+
+<!-- =========================================================================== -->
+<!-- CAL Search Page                                                            -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            showScopeSection="true"
+            canSearchEnclosingProjects="true"
+            label="%CALSearchPage.label"
+            icon="$nl$/icons/full/obj16/cal_search_obj.gif"
+            extensions="cal:90, metadata.xml:90"
+            class="org.openquark.cal.eclipse.ui.search.CALSearchPage"
+            sizeHint="460,160"
+            id="org.openquark.cal.eclipse.ui.CALSearchPage">
+      </page>
+   </extension>
+   <extension
+        id="CALSearchResultPage"
+        point="org.eclipse.search.searchResultViewPages">
+        <viewPage
+           class="org.openquark.cal.eclipse.ui.search.CALSearchResultPage"
+           id="org.eclipse.jdt.ui.CALSearchResultPage"
+           searchResultClass="org.openquark.cal.eclipse.ui.search.CALSearchPage$CALSearchResults">
+        </viewPage>
+   </extension>
+   <!--
+   <extension
+        id="JavaSearchResultPage"
+        point="org.eclipse.search.searchResultViewPages">
+        <viewPage
+            id="org.eclipse.jdt.ui.JavaSearchResultPage"
+            searchResultClass="org.eclipse.jdt.internal.ui.search.JavaSearchResult"
+            class="org.eclipse.jdt.internal.ui.search.JavaSearchResultPage">
+        </viewPage>
+   </extension>
+  -->
+<!-- =================================================================================== -->
+<!-- Extension: Document creation and setup                                              -->
+<!-- =================================================================================== -->
+   <extension
+         id="CALDocumentSetupParticipant"
+         name="%calDocumentSetupParticipant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            contentTypeId="org.openquark.cal.eclipse.core.calSource"
+            class="org.openquark.cal.eclipse.ui.caleditor.CALDocumentSetupParticipant">
+      </participant>
+   </extension>
+   <extension
+         id="CALDocumentFactory"
+         name="%calDocumentFactory"
+         point="org.eclipse.core.filebuffers.documentCreation">
+      <factory
+            contentTypeId="org.openquark.cal.eclipse.core.calSource"
+            class="org.openquark.cal.eclipse.ui.caleditor.CALDocumentFactory">
+      </factory>
+   </extension>
+   
+
+<!-- =========================================================================== -->
+<!-- Project Action Set                                                          -->
+<!-- Paths to existing menubars given by: org.eclipse.ui.ide.IIDEActionConstants -->
+<!-- TODOEL: Replace with org.eclipse.ui.menus for Eclipse 3.3                   -->
+<!-- =========================================================================== -->
+   <extension point="org.eclipse.ui.actionSets">
+      <actionSet
+         label="%ProjectActionSet.label"
+         description="%ProjectActionSet.description"
+         visible="true"
+         id="org.openquark.cal.eclipse.ui.ProjectActionSet">
+<!-- =========================================================================== -->
+<!-- Project Menu                                                                -->
+<!-- =========================================================================== -->
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.project.cleanAllCAL"
+               label="%CleanAllCALAction.label"
+               class="org.openquark.cal.eclipse.ui.actions.CleanAllCALAction"
+               menubarPath="project/build.ext"
+               id="org.openquark.cal.eclipse.ui.actions.CleanAllCAL">
+         </action>
+      </actionSet>
+   </extension>
+
+<!-- =========================================================================== -->
+<!-- Run Action Set                                                              -->
+<!-- TODOEL: Replace with org.eclipse.ui.menus for Eclipse 3.3                   -->
+<!-- =========================================================================== -->
+   <extension point="org.eclipse.ui.actionSets">
+      <actionSet
+         label="%RunActionSet.label"
+         description="%RunActionSet.description"
+         visible="true"
+         id="org.openquark.cal.eclipse.ui.RunActionSet">
+<!-- =========================================================================== -->
+<!-- Run Menu                                                                    -->
+<!-- =========================================================================== -->
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.run.openCALConsole"
+               label="%OpenCALConsoleAction.label"
+               class="org.openquark.cal.eclipse.ui.actions.OpenCALConsoleAction"
+               menubarPath="org.eclipse.ui.run/emptyLaunchGroup"
+               id="org.openquark.cal.eclipse.ui.actions.OpenCALConsole">
+         </action>
+      </actionSet>
+   </extension>
+
+<!-- =========================================================================== -->
+<!-- Coding Action Set                                                           -->
+<!-- Paths to existing menubars given by: org.eclipse.ui.ide.IIDEActionConstants -->
+<!-- TODOEL: Replace with org.eclipse.ui.menus for Eclipse 3.3                   -->
+<!-- =========================================================================== -->
+   <extension point="org.eclipse.ui.actionSets">
+      <actionSet
+         label="%CodingActionSet.label"
+         description="%CodingActionSet.description"
+         visible="false"
+         id="org.openquark.cal.eclipse.ui.CodingActionSet">
+
+<!-- =========================================================================== -->
+<!-- Source Menu                                                                 -->
+<!-- =========================================================================== -->
+
+         <menu
+               label="%SourceMenu.label"
+               path="edit"
+               id="org.openquark.cal.eclipse.ui.source.menu">
+            <separator
+                  name="editGroup">
+            </separator>
+            <groupMarker name="CAL_Eclipse_UI.groupMarker1"/>
+            <separator name="formatGroup"/>
+            <groupMarker name="CAL_Eclipse_UI.groupMarker2"/>
+            <separator name="tidyGroup"/>
+            <groupMarker name="CAL_Eclipse_UI.groupMarker3"/>
+            <separator name="helperGroup"/>
+         </menu>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.indent"
+               label="%IndentAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/formatGroup"
+               id="org.openquark.cal.eclipse.ui.actions.Indent">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.pretty.printer"
+               label="%PrettyPrinterAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/formatGroup"
+               id="org.openquark.cal.eclipse.ui.actions.PrettyPrinter">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.type.declaration.inserter"
+               label="%TypeDeclarationInserterAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/helperGroup"
+               id="org.openquark.cal.eclipse.ui.actions.TypeDeclarationInserter">
+         </action>
+<!--         <menu
+               label="Search"
+               path="edit"
+               id="org.openquark.cal.eclipse.ui.search.menu">
+            <separator
+                  name="editGroup">
+            </separator>
+         </menu>
+         -->
+         <menu
+               label="%searchMenu.label"
+               path="navigate"
+               id="org.eclipse.search.menu">
+            <groupMarker name="internalDialogGroup"/>   <!-- not to be used by clients  -->
+            <groupMarker name="dialogGroup"/>           <!-- to be used by clients      -->
+            <separator name="fileSearchContextMenuActionsGroup"/> <!-- to be used by clients      -->
+               <separator name="contextMenuActionsGroup"/> <!-- to be used by clients -->
+               <separator name="occurencesActionsGroup"/> <!-- to be used by clients -->
+               <separator name="extraSearchGroup"/> <!-- to be used by clients -->
+         </menu>
+
+         <menu id="declarationsSearchSubMenu"
+             label="%Declarations.label"
+             
+             path="org.eclipse.search.menu/contextMenuActionsGroup">
+             <groupMarker name="group1"/>
+             <groupMarker name="additions"/>
+             <groupMarker name="group2"/>
+         </menu>
+         
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.search.declarations.in.workspace"
+               label="%Workspace.label"
+               retarget="true"
+               menubarPath="org.eclipse.search.menu/declarationsSearchSubMenu/group1"
+               id="org.openquark.cal.eclipse.ui.actions.SearchDeclarationsInWorkspace">
+         </action>
+         
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.search.declarations.in.project"
+               label="%Project.label"
+               retarget="true"
+               menubarPath="org.eclipse.search.menu/declarationsSearchSubMenu/group2"
+               id="org.openquark.cal.eclipse.ui.actions.SearchDeclarationsInProject">
+         </action>
+         
+         <menu id="referencesSearchSubMenu"
+             label="%References.label"
+             path="org.eclipse.search.menu/contextMenuActionsGroup">
+             <groupMarker name="group1"/>
+             <groupMarker name="additions"/>
+             <groupMarker name="group2"/>
+         </menu>
+
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.search.references.in.workspace"
+               label="%Workspace.label"
+               retarget="true"
+               menubarPath="org.eclipse.search.menu/referencesSearchSubMenu/group1"
+               id="org.openquark.cal.eclipse.ui.actions.SearchReferencesInWorkspace">
+         </action>
+
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.search.references.in.project"
+               label="%Project.label"
+               retarget="true"
+               menubarPath="org.eclipse.search.menu/referencesSearchSubMenu/group2"
+               id="org.openquark.cal.eclipse.ui.actions.SearchReferencesInProject">
+         </action>
+
+         <menu
+               label="%NavigateMenu.label"
+               path="org.openquark.cal.eclipse.ui.refactoring.menu"
+               id="org.openquark.cal.eclipse.ui.navigate.menu">
+            <separator
+                  name="editGroup">
+            </separator>
+         </menu>
+         <menu
+               label="%RefactorMenu.label"
+               path="org.openquark.cal.eclipse.ui.source.menu"
+               id="org.openquark.cal.eclipse.ui.refactoring.menu">
+            <separator
+                  name="editGroup">
+            </separator>
+         </menu>
+<!-- edit group -->
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.openDeclaration"
+               label="%OpenDeclarationAction.label"
+               retarget="true"
+               menubarPath="navigate/open.ext"
+               id="org.openquark.cal.eclipse.ui.actions.OpenDeclaration">
+         </action>         
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.rename"
+               label="%Refactoring.renameAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.refactoring.menu/editGroup"
+               id="org.openquark.cal.eclipse.ui.actions.Rename">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.showTooltipDescription"
+               label="%ShowTooltipDescription.label"
+               retarget="true"
+               menubarPath="edit/additions"
+               id="org.openquark.cal.eclipse.ui.actions.ShowTooltipDescription">
+         </action>
+         <action
+               definitionId="org.eclipse.ui.edit.text.shiftRight"
+               label="%ShiftRightAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/formatGroup"
+               id="org.openquark.cal.eclipse.ui.actions.ShiftRight">
+         </action>
+         <action
+               definitionId="org.eclipse.ui.edit.text.shiftLeft"
+               label="%ShiftLeftAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/formatGroup"
+               id="org.openquark.cal.eclipse.ui.actions.ShiftLeft">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.remove.block.comment"
+               label="%RemoveBlockCommentAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/editGroup"
+               id="org.openquark.cal.eclipse.ui.actions.RemoveBlockComment">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.add.block.comment"
+               label="%AddBlockCommentAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/editGroup"
+               id="org.openquark.cal.eclipse.ui.actions.AddBlockComment">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.gotoNextElementAction"
+               label="%GotoNextElementAction.label"
+               retarget="true"
+               menubarPath="navigate/goTo/additions2"
+               id="org.openquark.cal.eclipse.ui.actions.GotoNextElement">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.gotoPreviousElementAction"
+               label="%GotoPreviousElementAction.label"
+               retarget="true"
+               menubarPath="navigate/goTo/additions2"
+               id="org.openquark.cal.eclipse.ui.actions.GotoPreviousElement">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.toggle.comment"
+               label="%ToggleCommentAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/editGroup"
+               id="org.openquark.cal.eclipse.ui.actions.ToggleComment">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.generate.element.comment"
+               label="%GenerateElementCommentAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/editGroup"
+               id="org.openquark.cal.eclipse.ui.actions.GenerateElementComment">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.clean.imports"
+               label="%CleanImportsAction.label"
+               retarget="true"
+               menubarPath="org.openquark.cal.eclipse.ui.source.menu/tidyGroup"
+               id="org.openquark.cal.eclipse.ui.actions.CleanImports">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.uncomment"
+               label="%UncommentAction.label"
+               retarget="true"
+               id="org.openquark.cal.eclipse.ui.actions.Uncomment">
+         </action>
+         <action
+               definitionId="org.openquark.cal.eclipse.ui.edit.text.java.comment"
+               label="%CommentAction.label"
+               retarget="true"
+               id="org.openquark.cal.eclipse.ui.actions.Comment">
+         </action>
+      </actionSet>
+   </extension>
+   <extension point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.openquark.cal.eclipse.ui.CodingActionSet">
+         <part
+               id="org.openquark.cal.eclipse.ui.PackageExplorer">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.TypeHierarchy">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.CALEditor">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.ClassFileEditor">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.ProjectsView">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.PackagesView">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.TypesView">
+         </part>
+         <part
+               id="org.openquark.cal.eclipse.ui.MembersView">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
+   
+<!-- =========================================================================== -->
+<!-- Command definitions                                                         -->
+<!-- =========================================================================== -->
+
+   <extension point="org.eclipse.ui.contexts">
+      <!-- Used in: CALEditor.initializeKeyBindingScopes() -->
+      <context
+            name="%context.editingCALSource.name"
+            description="%context.editingCALSource.description"
+            parentId="org.eclipse.ui.textEditorScope"
+            id="org.openquark.cal.eclipse.ui.calEditorScope">
+      </context>
+   </extension>
+
+   <extension point="org.eclipse.ui.commands">
+<!-- categories -->
+      <category
+            name="%category.source.name"
+            description="%category.source.description"
+            id="org.openquark.cal.eclipse.ui.category.source">
+      </category>
+      <category
+            name="%category.search.name"
+            description="%category.search.description"
+            id="org.openquark.cal.eclipse.ui.category.search">
+      </category>
+      <category
+            name="%category.navigate.name"
+            description="%category.navigate.description"
+            id="org.openquark.cal.eclipse.ui.category.navigate">
+      </category>
+      <category
+            name="%category.refactor.name"
+            description="%category.refactor.description"
+            id="org.openquark.cal.eclipse.ui.category.refactor">
+      </category>
+      <category
+            name="%category.refactoring.name"
+            description="%category.refactoring.description"
+            id="org.openquark.cal.eclipse.ui.category.refactoring">
+      </category>
+<!-- source -->
+      <command
+            name="%ActionDefinition.sourceQuickMenu.name"
+            description="%ActionDefinition.sourceQuickMenu.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.cal.source.quickMenu">
+      </command>
+      <command
+            name="%ActionDefinition.comment.name"
+            description="%ActionDefinition.comment.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.comment">
+      </command>
+      <command
+            name="%ActionDefinition.uncomment.name"
+            description="%ActionDefinition.uncomment.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.uncomment">
+      </command>
+      <command
+            name="%ActionDefinition.toggleComment.name"
+            description="%ActionDefinition.toggleComment.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.toggle.comment">
+      </command>
+      <command
+            name="%ActionDefinition.generateElementComment.name"
+            description="%ActionDefinition.generateElementComment.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.generate.element.comment">
+      </command>
+      <command
+            name="%ActionDefinition.cleanImports.name"
+            description="%ActionDefinition.cleanImports.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.clean.imports">
+      </command>
+      <command
+            name="%ActionDefinition.typeDeclarationInserter.name"
+            description="%ActionDefinition.typeDeclarationInserter.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.type.declaration.inserter">
+      </command>
+      <command
+            name="%ActionDefinition.prettyPrinter.name"
+            description="%ActionDefinition.prettyPrinter.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.pretty.printer">
+      </command>
+      <command
+            name="%ActionDefinition.addBlockComment.name"
+            description="%ActionDefinition.addBlockComment.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.add.block.comment">
+      </command>
+      <command
+            name="%ActionDefinition.removeBlockComment.name"
+            description="%ActionDefinition.removeBlockComment.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.remove.block.comment">
+      </command>
+      <command
+            name="%ActionDefinition.indent.name"
+            description="%ActionDefinition.indent.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.indent">
+      </command>
+      <command
+            name="%ActionDefinition.openDeclaration.name"
+            description="%ActionDefinition.openDeclaration.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.openDeclaration">
+      </command>
+      
+      <command
+            name="%ActionDefinition.show.outline.name"
+            description="%ActionDefinition.show.outline.description"
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.show.outline">
+      </command>
+      <command
+            name="%ActionDefinition.open.structure.name"
+            description="%ActionDefinition.open.structure.description"
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.eclipse.jdt.ui.navigate.java.open.structure">
+      </command>      
+      <command
+            name="%ActionDefinition.openDeclaration.name"
+            description="%ActionDefinition.openDeclaration.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.search.references.in.workspace2">
+      </command>
+      <command
+            name="%ActionDefinition.rename.name"
+            description="%ActionDefinition.rename.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.rename">
+      </command>
+      <command
+            name="%ActionDefinition.rename.name"
+            description="%ActionDefinition.rename.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.rename">
+      </command>
+      <command
+            name="search"      
+            description="Search for references in workspace"
+            categoryId="org.openquark.cal.eclipse.ui.category.search"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.search.references.in.workspace">
+      </command>
+      <command
+            name="search"
+            categoryId="org.openquark.cal.eclipse.ui.category.search"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.search.declarations.in.workspace">
+      </command>
+      <command
+            name="search"      
+            categoryId="org.openquark.cal.eclipse.ui.category.search"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.search.declarations.in.project">                
+      </command>
+      <command
+            name="search"
+            categoryId="org.openquark.cal.eclipse.ui.category.search"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.search.references.in.project">                
+      </command>
+      <command
+            name="%ActionDefinition.showTooltipDescription.name"
+            description="%ActionDefinition.showTooltipDescription.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.showTooltipDescription">
+      </command>
+      <command
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            description="%ActionDefinition.nextFunction.description"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.gotoNextElementAction"
+            name="%ActionDefinition.nextFunction.name"/>
+      <command
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            description="%ActionDefinition.previousFunction.description"
+            id="org.openquark.cal.eclipse.ui.edit.text.java.gotoPreviousElementAction"
+            name="%ActionDefinition.previousFunction.name"/>
+            
+<!--
+     <command
+           name="%toggleMarkOccurrences.label"
+           description="%toggleMarkOccurrences.description"
+           categoryId="org.openquark.cal.eclipse.ui.category.source"
+           id="org.openquark.cal.eclipse.ui.edit.text.java.toggleMarkOccurrences">
+     </command>
+      <command
+            name="%ActionDefinition.removeOccurrenceAnnotations.name"
+            description="%ActionDefinition.removeOccurrenceAnnotations.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.edit.text.remove.occurrence.annotations">
+      </command>
+
+      <command
+            name="%ActionDefinition.corrections.renameInFile.name"
+            description="%ActionDefinition.corrections.renameInFile.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.renameInFile.assist">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.assignToLocal.name"
+            description="%ActionDefinition.corrections.assignToLocal.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.assignToLocal.assist">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.assignToField.name"
+            description="%ActionDefinition.corrections.assignToField.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.assignToField.assist">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.assignParamToField.name"
+            description="%ActionDefinition.corrections.assignParamToField.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.assignParamToField.assist">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.addBlock.name"
+            description="%ActionDefinition.corrections.addBlock.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.addBlock.assist">
+      </command> 
+      <command
+            name="%ActionDefinition.corrections.addThrowsDecl.name"
+            description="%ActionDefinition.corrections.addThrowsDecl.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.addThrowsDecl">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.addCast.name"
+            description="%ActionDefinition.corrections.addCast.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.addCast">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.qualifyField.name"
+            description="%ActionDefinition.corrections.qualifyField.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.qualifyField">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.changeToStatic.name"
+            description="%ActionDefinition.corrections.changeToStatic.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.changeToStatic">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.addNonNLS.name"
+            description="%ActionDefinition.corrections.addNonNLS.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.addNonNLS">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.addImport.name"
+            description="%ActionDefinition.corrections.addImport.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.addImport">
+      </command>
+      <command
+            name="%ActionDefinition.corrections.addSuppressWarnings.name"
+            description="%ActionDefinition.corrections.addSuppressWarnings.description"
+            categoryId="org.openquark.cal.eclipse.ui.category.source"
+            id="org.openquark.cal.eclipse.ui.correction.addSuppressWarnings">
+      </command>
+-->
+   </extension>
+   
+   <extension point="org.eclipse.ui.bindings">
+      <!--  win32:  M1=CTRL,    M2=SHIFT, M3=ALT, M4=-
+            carbon: M1=COMMAND, M2=SHIFT, M3=ALT, M4=CTRL -->
+      
+<!-- source -->
+      <!-- 
+            TODOEL: Registering these causes a conflict with the same keys from the Java quickMenu.
+                    As a result, both quick menu actions would be disabled.
+        -->
+<!--
+      <key
+            sequence="M2+M3+S"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.cal.source.quickMenu"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="carbon"
+            sequence="M2+M3+S"
+            commandId=""
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="carbon"
+            sequence="COMMAND+ALT+S"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.cal.source.quickMenu"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+  -->
+      <key
+            sequence="M1+M2+C"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.toggle.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M2+M3+J"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.generate.element.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+/"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.toggle.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+      		sequence="M1+M2+ARROW_DOWN"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.gotoNextElementAction"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+       		sequence="M1+M2+ARROW_UP"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.gotoPreviousElementAction"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+7"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.toggle.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="gtk"
+            sequence="M1+M2+C"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId=""
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="gtk"
+            sequence="ESC CTRL+C"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.toggle.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M2+/"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.add.block.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M2+\"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.remove.block.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+I"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.indent"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.openDeclaration"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3"/>
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.rename"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+R"/>
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.search.references.in.workspace"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+G"/>
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.search.declarations.in.workspace"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+G"/>
+<!--            
+      <key
+            commandId="org.openquark.cal.eclipse.ui.rename.function"
+            contextId="CALWorkspace"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+R"/>
+                        
+      <key
+            commandId="org.openquark.cal.eclipse.ui.caleditor.outline.refactor"
+            contextId="org.openquark.cal.eclipse.ui.caleditor.outline.viewerContribution"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+T"/>
+-->
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.clean.imports"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+O"/>
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.pretty.printer"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F"/>
+      <key
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.showTooltipDescription"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F2"/>
+      <key
+            sequence="M1+O"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.show.outline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>            
+<!--
+      <key
+            sequence="M2+M3+O"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.toggleMarkOccurrences"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="carbon"
+            sequence="M2+M3+O"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId=""
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="carbon"
+            sequence="COMMAND+ALT+O"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.java.toggleMarkOccurrences"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            
+      <key
+            sequence="M2+M3+U"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.remove.occurrence.annotations"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="carbon"
+            sequence="M2+M3+U"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId=""
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            platform="carbon"
+            sequence="COMMAND+ALT+U"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.edit.text.remove.occurrence.annotations"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            
+       <key
+            sequence="M1+2 R"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.correction.renameInFile.assist"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+       <key
+            sequence="M1+2 L"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.correction.assignToLocal.assist"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>            
+       <key
+            sequence="M1+2 F"
+            contextId="org.openquark.cal.eclipse.ui.calEditorScope"
+            commandId="org.openquark.cal.eclipse.ui.correction.assignToField.assist"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>              
+-->
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.openquark.cal.eclipse.ui.CAL"
+            name="CAL"/>
+      <view
+            category="org.openquark.cal.eclipse.ui.CAL"
+            class="org.openquark.cal.eclipse.ui.views.CALWorkspace"
+            icon="icons/vault.gif"
+            id="org.openquark.cal.eclipse.ui.views.CALWorkspace"
+            name="%CALWorkspace.label"/>
+   </extension>
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="org.openquark.cal.eclipse.ui.views.CALWorkspace"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>
+          <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+               <newWizardShortcut
+                    id="org.openquark.cal.eclipse.ui.NewModuleWizard"/>
+               <perspectiveShortcut id="org.openquark.cal.eclipse.ui.CALPerspective"/>
+          </perspectiveExtension>
+          <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+             <perspectiveShortcut id="org.openquark.cal.eclipse.ui.CALPerspective"/>
+          </perspectiveExtension>
+   </extension>
+   <extension
+         id="org.openquark.cal.eclipse.CALPerspectives"
+         name="CAL"
+         point="org.eclipse.ui.perspectives">
+   <perspective
+            class="org.openquark.cal.eclipse.perspectives.CALPerspectiveFactory"
+            id="org.openquark.cal.eclipse.ui.CALPerspective"
+            name="%perspectiveName"/>
+   </extension>
+
+
+<!-- =========================================================================== -->
+<!-- Console                                                                     -->
+<!-- =========================================================================== -->
+
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory 
+            label="%calConsole.label"
+            class="org.openquark.cal.eclipse.ui.console.CALConsoleFactory">
+      </consoleFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consolePageParticipants">
+      <consolePageParticipant
+            class="org.openquark.cal.eclipse.ui.console.CALConsolePageParticipant"
+            id="org.openquark.cal.eclipse.ui.console.calConsolePageParticipant">
+         <enablement>
+            <test property="org.eclipse.ui.console.consoleTypeTest" value="calConsole"/>
+         </enablement>
+      </consolePageParticipant>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="CAL"
+            name="%CALCategory"/>
+      <wizard
+            canFinishEarly="false"
+            category="CAL"
+            class="org.openquark.cal.eclipse.ui.wizards.NewModuleWizard"
+            icon="icons/nav_module.png"
+            id="org.openquark.cal.eclipse.ui.NewModuleWizard"
+            name="%CALNewModuleWizard"
+            project="false"/>
+      <wizard
+            canFinishEarly="false"
+            category="org.eclipse.jdt.ui.java"
+            class="org.openquark.cal.eclipse.ui.wizards.NewModuleWizard"
+            icon="icons/nav_module.png"
+            id="org.openquark.cal.eclipse.ui.NewModuleWizard"
+            name="%CALNewModuleWizard"
+            project="false"/>
+      <wizard
+            canFinishEarly="false"
+            category="CAL"
+            class="org.openquark.cal.eclipse.ui.wizards.NewQuarkBinariesProjectWizard"
+            icon="icons/vault.gif"
+            id="CAL_Eclipse_UI.wizard1"
+            name="%CALNewQuarkBinariesProjectWizard"
+            project="true"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            class="org.openquark.cal.eclipse.ui.templates.CALDocTemplateContextType"
+            id="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            name="CALDoc">
+      </contextType>
+      <contextType
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateContextType"
+            id="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            name="CAL">
+      </contextType>
+      <resolver
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateVariableResolver"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Inserts a CAL Template"
+            icon="icons/template.gif"
+            name="CAL"
+            type="CAL">
+      </resolver> 
+      <resolver
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateVariableResolver"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Inserts a CALDoc Template"
+            icon="icons/template.gif"
+            name="CALDoc"
+            type="CALDoc">
+      </resolver>
+      <resolver
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateVariableResolver"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Inserts a CALDoc Template"
+            icon="icons/template.gif"
+            name="CALDoc"
+            type="context_keyword">
+      </resolver>
+      <resolver
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateVariableResolver"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Inserts a scope declaration"
+            icon="icons/template.gif"
+            name="CAL"
+            type="scope1">
+      </resolver>
+      <resolver
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateVariableResolver"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Inserts a scope declaration"
+            icon="icons/template.gif"
+            name="CAL"
+            type="scope2">
+      </resolver>
+      <resolver
+            class="org.openquark.cal.eclipse.ui.templates.CALTemplateVariableResolver"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Inserts a CALDoc Template"
+            icon="icons/template.gif"
+            name="CALDoc"
+            type="argument_name">
+      </resolver>
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Describes a cal argument"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.arg"
+            name="@arg">
+         <pattern>
+@arg ${argument_name} ${argument_description} 
+         </pattern>
+      </template>    
+      
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Describes a return value"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.return"
+            name="@return">
+         <pattern>
+@return ${return_value_description} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Provides other documentation to look at"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.see"
+            name="@see">
+         <pattern>
+@see ${context_keyword} ${references} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Emphasize text in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.em"
+            name="@em">
+         <pattern>
+{@em ${text}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Strongly emphasize text in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.strong"
+            name="@strong">
+         <pattern>
+{@strong ${text}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Superscript text in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.sup"
+            name="@sup">
+         <pattern>
+{@sup ${text}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Subscript text in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.sub"
+            name="@sub">
+         <pattern>
+{@sub ${text}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="URL in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.url"
+            name="@url">
+         <pattern>
+{@url ${url}@} 
+         </pattern>
+      </template>      
+        
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Code in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.code"
+            name="@code">
+         <pattern>
+{@code ${code_text}@} 
+         </pattern>
+      </template>
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Link in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.link"
+            name="@link">
+         <pattern>
+{@link ${context_keyword} ${reference}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Author in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.author"
+            name="@author">
+         <pattern>
+@author ${user}
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Version info in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.version"
+            name="@version">
+         <pattern>
+@version ${version_info} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Deprecation notice in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.deprecated"
+            name="@deprecated">
+         <pattern>
+@deprecated ${deprecation_notice} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Unordered list in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.unorderedList"
+            name="@unorderedList">
+         <pattern>
+{@unorderedList {@item ${list_item_text}@}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="List item in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.item"
+            name="@item">
+         <pattern>
+{@item ${list_item_text}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Order list in CALDoc"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.orderedList"
+            name="@orderedList">
+         <pattern>
+{@orderedList {@item ${list_item_text}@}@} 
+         </pattern>
+      </template>      
+
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALDocTemplateContext"
+            description="Summary in CALDoc. This overrides ..."
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.caldoc.summary"
+            name="@summary">
+         <pattern>
+{@summary ${summary_text}@} 
+         </pattern>
+      </template>      
+            
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Creates an if-then-else triad"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.ifThenElse"
+            name="if_then_else">
+         <pattern>
+            if ${boolean_expr} then
+    ${expr1}
+else
+    ${expr2}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Creates a let expression"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.let"
+            name="let">
+         <pattern>
+            let
+    ${assignments};
+in
+    ${expr}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Creates a case"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.case"
+            name="case">
+         <pattern>
+            case ${var} of
+${lhs} -&gt; ${rhs};
+${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Creates a new function"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.function"
+            name="new_function">
+         <pattern>
+            public ${name} ${params} = 
+    ${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) type"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignDataType"
+            name="foreign_type">
+         <pattern>
+            data foreign unsafe import jvm "${qualified_java_type}"
+    public ${cal_type} deriving ${deriving_types};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) constructor"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignConstructor"
+            name="foreign_constructor">
+         <pattern>
+            foreign unsafe import jvm "constructor"
+    public ${cal_name} :: ${type_signature};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) method"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignMethod"
+            name="foreign_method">
+         <pattern>
+            foreign unsafe import jvm "method ${java_name}"
+    public ${cal_name} :: ${type_signature};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) static method"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignStaticMethod"
+            name="foreign_static_method">
+         <pattern>
+            foreign unsafe import jvm "static method ${java_name}"
+    public ${cal_name} :: ${type_signature};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) field"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignField"
+            name="foreign_field">
+         <pattern>
+            foreign unsafe import jvm "field ${java_name}"
+    public ${cal_name} :: ${type_signature};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) static field"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignStaticField"
+            name="foreign_startic_field">
+         <pattern>
+            foreign unsafe import jvm "static field ${java_name}"
+    public ${cal_name} :: ${type_signature};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) instanceof operation"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignInstanceof"
+            name="foreign_instanceof">
+         <pattern>
+            foreign unsafe import jvm "instanceof ${java_name}"
+    public ${cal_name} :: ${type_signature};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) null object"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignNull"
+            name="foreign_null">
+         <pattern>
+            foreign unsafe import jvm "null"
+    public null${type} :: ${type};${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) check for a null object"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignIsNull"
+            name="foreign_is_null">
+         <pattern>
+            foreign unsafe import jvm &quot;isNull&quot;
+    public isNull${type} :: ${type} -&gt; Boolean;${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) check for a non-null object"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignIsNotNull"
+            name="foreign_is_not_null">
+         <pattern>
+            foreign unsafe import jvm "isNotNull"
+    public isNotNull${type} :: ${type} -> Boolean;${cursor}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) array creation function"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignNewArray"
+            name="foreign_new_array">
+         <pattern>
+            foreign unsafe import jvm &quot;newArray&quot;
+    public new${type}Array :: ${type} -&gt; J${type}Array;
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) function to find the value of a subscript of an array"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignArraySubscript"
+            name="foreign_array_subscript">
+         <pattern>
+            foreign unsafe import jvm "subscriptArray"
+    public subscript${type}Array :: J${type}Array -> Int -> ${type};
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) array length function"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignArrayLength"
+            name="foreign_array_length">
+         <pattern>
+            foreign unsafe import jvm "lengthArray"
+    public length${type}Array :: J${type}Array -> Int;
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Import a foreign (Java) array update function"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.foreignUpdateArray"
+            name="foreign_update_array">
+         <pattern>
+            foreign unsafe import jvm "updateArray"
+    public update${type}Array :: J${type}Array -> Int -> ${type} -> ${type};
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Define a CAL Type"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.type_definition"
+            name="type_definition">
+         <pattern>
+data ${scope1} ${TypeName}  =
+	${scope2} ${DataConstructorName} ${arguments};
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="Define a CAL data constructor"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.data_constructor_definition"
+            name="data_constructor_definition">
+         <pattern>
+| ${scope2} ${DataConstructorName} ${arguments}
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="A CAL class definition"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.class_definition"
+            name="class_definition">
+         <pattern>
+${scope1} class ${ClassName} ${typeArguments} where
+    ${scope2} ${memberName} :: ${memberType};
+    ;
+         </pattern>
+      </template>
+      <template
+            autoinsert="true"
+            contextTypeId="org.openquark.cal.eclipse.ui.CALTemplateContext"
+            description="A CAL class member definition"
+            icon="icons/template.gif"
+            id="org.openquark.cal.eclipse.ui.templates.class_member_definition"
+            name="class_member_definition">
+         <pattern>
+    ${scope2} ${memberName} :: ${memberType};
+         </pattern>
+      </template>      
+   </extension>
+</plugin>

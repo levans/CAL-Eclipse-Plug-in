@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>CAL performance</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="prev" href="bk02ar01s02.html" title="Why did we create CAL instead of just using Haskell?"><link rel="next" href="bk02ar01s04.html" title="CAL syntax examples"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">CAL performance</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar01s02.html">Prev</a>&nbsp;</td><th align="center" width="60%">CAL for Haskell Programmers</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar01s04.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N20CEE"></a>CAL performance</h2></div></div></div>
+    
+
+    <p>CAL has a mature compiler and runtime implementation that can
+    produce very fast code. In the case of micro-benchmarks, it is possible to
+    write CAL code that performs essentially as well as Java code, mainly
+    because the resulting CAL code compiles down to essentially the same
+    underlying optimal Java code. In addition, the CAL runtime has the
+    following optimizations:</p>
+
+    <p><div class="itemizedlist"><ul type="disc"><li>
+          <p>compiles tail recursive functions as loops</p>
+        </li><li>
+          <p>makes use of unboxed values (for foreign types). For example,
+          the unboxed form of the Prelude.Int type is the primitive unboxed
+          Java int.</p>
+
+          <div class="itemizedlist"><ul type="circle"><li>
+              <p>these are used (where possible) for function arguments,
+              return values, and data constructor field values</p>
+            </li></ul></div>
+        </li><li>
+          <p>efficient run-time representation of record types, especially
+          for tuples</p>
+        </li><li>
+          <p>a global optimizer, written in CAL, that does global
+          transformations such as inlining and fusion</p>
+        </li><li>
+          <p>no use of slow features such as the Java reflection API at
+          runtime</p>
+        </li></ul></div>The CAL compiler and run-time are both fully
+    multi-threaded. Adjunct modules can be created, compiled and functionality
+    in them executed in a fully multi-threaded way.</p>
+
+    <p>The CAL compiler can be configured to produce Java source code as an
+    intermediate format (rather than Java bytecode directly). The resulting
+    Java source code is fairly readable and can be used to understand how CAL
+    lazy constructs are compiled, and the special cases that we handle. In
+    particular, many of our run-time code generation optimizations have been
+    discovered by looking at the generated source for key functions of
+    interest, and asking ourselves how we would speed up the Java
+    implementation if it were hand written.</p>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar01s02.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar01.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar01s04.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Why did we create CAL instead of just using Haskell?&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;CAL syntax examples</td></tr></table></div></body></html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Foreign type definitions</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s04s04.html" title="Foreign definitions"><link rel="prev" href="bk03ch03s04s04.html" title="Foreign definitions"><link rel="next" href="bk03ch03s04s04s02.html" title="Foreign function definitions for Java methods and constructors"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Foreign type definitions</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s04s04.html">Prev</a>&nbsp;</td><th align="center" width="60%">Foreign definitions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s04s04s02.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N23A74"></a>Foreign type definitions</h4></div></div></div>
+          
+
+          <p>Java types (i.e. classes, interfaces, and Java primitive types) are imported into
+          CAL using the <code class="code">data foreign unsafe import jvm</code> construct:<pre class="synopsis">data foreign unsafe import jvm [<em class="replaceable"><code>i_visibility</code></em>] "<em class="replaceable"><code>java_name</code></em>" 
+ [<em class="replaceable"><code>c_visibility</code></em>] <em class="replaceable"><code>type_identifier</code></em> [deriving <em class="replaceable"><code>type_class</code></em> [, <em class="replaceable"><code>type_class</code></em>]];</pre></p>
+
+          <p>The <em class="replaceable"><code>java_name</code></em> is the fully qualified name of the type in
+          Java. This is the name returned by the Java method
+          <code class="code">java.lang.Class.getName()</code>.</p>
+
+          <p>Some examples are:<div class="informalexample">
+              <p><code class="literal">"java.lang.String"</code></p>
+            </div><div class="informalexample">
+              <p><code class="literal">"java.io.File"</code></p>
+            </div></p>
+
+          <p>Java inner classes use the <code class="code">$</code> as a separator between the name of the
+          outer class and the name of the inner class:<div class="informalexample">
+              <p><code class="literal">"java.util.Map$Entry"</code></p>
+            </div></p>
+
+          <p>Java primitive types are allowed as well:<div class="informalexample">
+              <p><code class="literal">"boolean"</code>, <code class="literal">"char"</code>,
+              <code class="literal">"byte"</code>, <code class="literal">"short"</code>, <code class="literal">"int"</code>,
+              <code class="literal">"long"</code>, <code class="literal">"float"</code>,
+              <code class="literal">"double"</code></p>
+            </div></p>
+
+          <p>Java array types follow the above naming rules along with the rule that terminating
+          square brackets are used to indicate array dimensionality (as in Java source). Some
+          examples are:<div class="informalexample">
+              <p><code class="literal">"java.lang.Object[]"</code></p>
+            </div><div class="informalexample">
+              <p><code class="literal">"int[]"</code></p>
+            </div><div class="informalexample">
+              <p><code class="literal">"long[][]"</code></p>
+            </div><div class="informalexample">
+              <p><code class="literal">"java.lang.String[][]"</code></p>
+            </div></p>
+
+          <p><em class="replaceable"><code>C_visibility</code></em> specifies the visibility of the imported
+          type; it will be either <code class="modifier">public</code>, <code class="modifier">protected</code>, or
+          <code class="modifier">private</code>. If omitted, the visibility defaults to
+          <code class="modifier">private</code>.</p>
+
+          <p><em class="replaceable"><code>Type_identifier</code></em> is a CAL identifier beginning with an
+          uppercase letter. It specifies the name that the foreign type will be assigned within
+          CAL.</p>
+
+          <p>Ex:<div class="informalexample">
+              <pre class="programlisting">data foreign unsafe import jvm public "java.math.BigInteger" 
+    public Integer;</pre>
+            </div></p>
+
+          <p>In the above example, the name of the type in CAL is <code class="type">Prelude.Integer</code>
+          (this definition occurs in the Prelude module). It is defined by the Java class
+          <code class="classname">java.math.BigInteger</code>. Both the implementation visibility and the
+          CAL visibility are public.</p>
+
+          <p>Ex:<div class="informalexample">
+              <pre class="programlisting">data foreign unsafe import jvm private "int"
+    public RelativeDate deriving Eq, Ord;</pre>
+            </div></p>
+
+          <p>In this example, the name of the type in CAL is
+          <code class="type">RelativeTime.RelativeDate</code> (this definition occurs in the RelativeTime
+          module). It is implemented by the Java primitive <code class="type">int</code> type. The CAL type is
+          public, but its implementation as a Java <code class="type">int</code> is private. The type derives the
+          <code class="classname">Eq</code> and <code class="classname">Ord</code> class instances. The optional
+          <code class="code">deriving</code> clause allows you to have the compiler automatically generate one or
+          more type class instances for this foreign type (see <a href="bk03ch04s02.html#TypeClasses">the section called &ldquo;Type classes&rdquo;</a> for a
+          description of type classes). This feature saves the effort of having to define
+          boilerplate instances for very commonly-used type classes whose instances tend to be
+          defined in a very standard fashion.</p>
+
+          <p>Only certain type classes may be specified in the deriving clause of a foreign type
+          definition. The type classes supported are:<div class="itemizedlist"><ul type="disc" compact><li>
+                <p><code class="classname">Debug.Show</code></p>
+              </li><li>
+                <p><code class="classname">Prelude.Eq</code></p>
+              </li><li>
+                <p><code class="classname">Prelude.Inputable</code></p>
+              </li><li>
+                <p><code class="classname">Prelude.Ord</code></p>
+              </li><li>
+                <p><code class="classname">Prelude.Outputable</code></p>
+              </li></ul></div></p>
+
+          <p>The type class <code class="classname">Prelude.Ord</code> can only be derived for foreign
+          types that represent either Java primitive types (e.g., <code class="type">int</code>,
+          <code class="type">char</code>, <code class="type">boolean</code>) or Java reference types that implement the
+          <code class="interfacename">Comparable</code> interface. "Implementation visibility" is
+          specified by <em class="replaceable"><code>i_visibility</code></em>. It will be either
+          <code class="modifier">public</code>, <code class="modifier">protected</code>, or
+          <code class="modifier">private</code>. If omitted, the implementation visibility defaults to
+          <code class="modifier">private</code>. Implementation visibility indicates whether outside modules
+          are permitted to define foreign functions that operate on the imported type.</p>
+
+          <p>This ability to control the visibility of a foreign type's implementation type
+          allows the programmer to define abstract data types that use foreign values as their
+          underlying representation.</p>
+
+          <p>Ex:<div class="informalexample">
+              <pre class="programlisting">// --- Module Color ---
+module Color;
+import Cal.Core.Prelude;
+friend Color_Tests;
+
+data foreign unsafe import jvm public "java.awt.Color" 
+    public JColor;
+
+data foreign unsafe import jvm protected "java.awt.Color"
+    public TestableColor;
+data foreign unsafe import jvm private "java.awt.Color" 
+    public Color;
+
+// --- Module Color_Tests ---
+module Color_Tests;
+import Cal.Core.Prelude;
+import Color;
+
+// !!! Won't compile, Color has private implementation
+foreign unsafe import jvm "method getRed" 
+    private getRed :: Color -&gt; Int;
+
+// OK, TestableColor is protected implementation 
+// and we're a friend module
+foreign unsafe import jvm "method getRed" 
+    private t_getRed :: TestableColor -&gt; Int; 
+
+// --- Module Draw ---
+import Color using
+    typeConstructor = JColor, Color;
+;
+
+// OK, JColor is public implementation
+foreign unsafe import jvm "method getRed" 
+    private jColor_getRed :: JColor -&gt; Int;
+
+// !!! Won't compile, TestableColor has protected implementation 
+// scope and we're not a friend module
+foreign unsafe import jvm "method getRed" 
+    private t_getRed :: TestableColor -&gt; Int; 
+
+// !!! Won't compile, Color has private implementation scope
+foreign unsafe import jvm "method getRed" 
+    private getRed :: Color -&gt; Int;</pre>
+            </div></p>
+
+          <p>In the above example, the <code class="classname">Draw</code> module is permitted to define
+          foreign functions that operate upon <code class="classname">java.awt.Color</code> values as CAL
+          functions that operate upon <code class="type">JColor</code> values, because <code class="type">JColor</code> is
+          imported with a publicly-visible implementation. However, the <code class="classname">Draw</code>
+          module is not permitted to define foreign functions that operate upon
+          <code class="classname">java.awt.Color</code> values as CAL functions that operate upon
+          <code class="type">Color</code> values, because the <code class="type">Color</code> type is defined with a private
+          implementation. Neither can the <code class="classname">Draw</code> module define a foreign
+          function that operates upon <code class="classname">java.awt.Color</code> values as a CAL function
+          that operates upon <code class="type">TestableColor</code> values, because the <code class="type">Testable</code>
+          type has a protected implementation. <code class="classname">Color_Tests</code>
+          <span class="emphasis"><em>is</em></span> able to implement such functions on <code class="type">TestableColor</code>
+          values, however, because <code class="classname">Color_Tests</code> is a friend module of
+          <code class="classname">Color</code>. (See <a href="bk03ch03s05.html#Modules">the section called &ldquo;Modules&rdquo;</a> for more detail of
+          scoping).</p>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s04s04.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s04s04.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s04s04s02.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Foreign definitions&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Foreign function definitions for Java methods and constructors</td></tr></table></div></body></html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Matching data constructors</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s02s11.html" title="Case expressions"><link rel="prev" href="bk03ch03s02s11s03.html" title="Matching records"><link rel="next" href="bk03ch03s02s11s05.html" title="Matching groups of data constructors"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Matching data constructors</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s02s11s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">Case expressions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s02s11s05.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N22E00"></a>Matching data constructors</h4></div></div></div>
+          
+
+          <p>(See <a href="bk03ch03s04s03.html#TypeDefinitions">the section called &ldquo;Type
+        definitions&rdquo;</a> for an explanation of algebraic types and
+          data constructors.)</p>
+
+          <p>There are three forms of pattern for matching data constructors:<pre class="synopsis"><em class="replaceable"><code>constructor_name</code></em> [<em class="replaceable"><code>identifier</code></em> [<em class="replaceable"><code>identifier</code></em> ...]...]</pre><pre class="synopsis"><em class="replaceable"><code>constructor_name</code></em> {[<em class="replaceable"><code>field_name1</code></em> [, <em class="replaceable"><code>field_name2</code></em> ...]]}</pre><pre class="synopsis"><em class="replaceable"><code>constructor_name</code></em> {<em class="replaceable"><code>field_name1</code></em> = <em class="replaceable"><code>identifier1</code></em> [, <em class="replaceable"><code>field_name2</code></em> = <em class="replaceable"><code>identifier2</code></em> ...]}</pre></p>
+
+          <p>The first form binds identifiers to constructor arguments in the order they appear
+          in the declaration. i.e. the first identifier is bound to the first argument, the second
+          identifier is bound to the second argument, etc. All arguments must be bound -- the number
+          of identifiers must be equal to the number arguments to the data constructor. Each
+          <em class="replaceable"><code>identifier</code></em> may be the wildcard name "<code class="literal">_</code>"
+          (underscore) for fields that you don't want to access.</p>
+
+          <p>The second form matches a data constructor containing <span class="emphasis"><em>at least</em></span>
+          the specified fields; the field name identifiers are bound to the corresponding fields'
+          values. The third form matches a data constructor containing <span class="emphasis"><em>at least</em></span>
+          the specified fields; each provided identifier is matched to the values of the
+          corresponding field.</p>
+
+          <p>Ex:<div class="informalexample">
+              <pre class="programlisting">data public MyTuple a b =
+    public MyTuple
+        field1 :: a
+        field2 :: b;
+public myFst1 myTuple =
+    case myTuple of
+    MyTuple elem1 elem2 -&gt; elem1;
+    ;
+public myFst2 myTuple =
+    case myTuple of
+    MyTuple elem _ -&gt; elem; 
+    ;
+public myFst3 myTuple =
+    case myTuple of
+    MyTuple {field1} -&gt; field1; 
+    ;
+public myFst4 myTuple =
+    case myTuple of
+    MyTuple {field1=elem} -&gt; elem; 
+    ;</pre>
+            </div></p>
+
+          <p>The above <code class="function">myFst</code> functions extract the value of the
+          <code class="varname">field1</code> argument from a <code class="type">MyTuple</code> data value.</p>
+
+          <p><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>myFst1 (MyTuple 2.0 "String")</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">2.0</code></span></p></div>
+            </div><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>myFst3 (MyTuple Nothing 2.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Nothing</code></span></p></div>
+            </div></p>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s02s11s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s02s11.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s02s11s05.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Matching records&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Matching groups of data constructors</td></tr></table></div></body></html>

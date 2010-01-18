@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>CAFs and caching</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s08.html" title="Advanced topics"><link rel="prev" href="bk03ch03s08s02.html" title="Dynamic typing"><link rel="next" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">CAFs and caching</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s08s02.html">Prev</a>&nbsp;</td><th align="center" width="60%">Advanced topics</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch04.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N24B3D"></a>CAFs and caching</h3></div></div></div>
+        
+
+        <p>A Constant Applicative Form, or CAF, is a top-level non-foreign function that has no
+        lexical arguments and has a non-constrained type.<div class="informalexample">
+            <pre class="programlisting">approxPi :: Double;
+approxPi = 3.14159;</pre>
+          </div><div class="informalexample">
+            <pre class="programlisting">addOneInt :: Int -&gt; Int;
+addOneInt x = x + 1;</pre>
+          </div><div class="informalexample">
+            <pre class="programlisting">sunDiameter :: Num a =&gt; a;
+sunDiameter = 1380000;</pre>
+          </div></p>
+
+        <p>Of the three top-level functions above, only <code class="function">approxPi</code> is a CAF.
+        <code class="function">addOneInt</code> is not a CAF, because its definition includes a lexical
+        argument (<em class="parameter"><code>x</code></em>). <code class="function">sunDiameter</code> is also not a CAF,
+        because it has a constrained type<sup>[<a href="#ftn.N24B62" name="N24B62">7</a>]</sup> (i.e., its type signature contains a '<code class="literal">=&gt;</code>').</p>
+
+        <p>Even though CAFs must not accept lexical arguments, it is nevertheless possible to
+        declare a CAF which equals a function of one or more arguments:<div class="informalexample">
+            <pre class="programlisting">cafAdd10Int :: Int -&gt; Int;
+cafAdd10Int = add 10;
+add10Int :: Int -&gt; Int;
+add10Int x = add 10 x;</pre>
+          </div></p>
+
+        <p>In the code above, <code class="function">add10Int</code> and <code class="function">cafAdd10Int</code>
+        have the same type and represent functions with equivalent behaviors (viz., they both add 10
+        to their single argument). However, <code class="function">cafAdd10Int</code> is a CAF, whereas
+        <code class="function">add10Int</code> is not, because <code class="function">add10Int</code> accepts a
+        <span class="emphasis"><em>lexical</em></span> argument (i.e., one which is specified in the function
+        definition).</p>
+
+        <p>Note also the distinction between polymorphic types and constrained types. A CAF may
+        have a polymorphic type, so long as the polymorphic type is unconstrained:<div class="informalexample">
+            <pre class="programlisting">second :: [a] -&gt; a;
+second = head `compose` tail;</pre>
+          </div><div class="informalexample">
+            <pre class="programlisting">secondOrderable :: Ord a =&gt; [a] -&gt; a;
+secondOrderable = head `compose` tail;</pre>
+          </div></p>
+
+        <p>In the above code, <code class="function">second</code> is a CAF, whereas
+        <code class="function">secondOrderable</code> is not, since <code class="function">secondOrderable</code> has
+        a class constraint.</p>
+
+        <p>CAL caches the value of each CAF after the first time it has been evaluated. This
+        means that it is possible to use the value of a expensive-to-calculate CAF in multiple
+        expressions (or in multiple parts of a single expression) without incurring the cost of
+        evaluating it multiple times.<div class="informalexample">
+            <pre class="programlisting">largeSum :: Integer;
+largeSum = sum (take 1000000 (List.repeat 1));</pre>
+          </div></p>
+
+        <p>We can verify this using a (somewhat contrived) example. With
+        <code class="function">largeSum</code> defined as above, in a module in the current
+        workspace:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>largeSum</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">1000000</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>largeSum</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">1000000</code></span></p></div>
+          </div></p>
+
+        <p>The first time that we evaluate <code class="function">largeSum</code> in an ICE session, it
+        takes an appreciable amount of time to execute (on one machine it took 10,250 milliseconds).
+        Subsequent times, however, it should evaluate nearly instantaneously (0 milliseconds on the
+        same machine).</p>
+
+        <p>In the case of CAFs that represent function values (such as
+        <code class="function">cafAdd10Int</code> above), it is important to note that the value which is
+        cached is not the value of any particular invocation (e.g., the value of
+        <code class="literal">16</code> for <code class="code">cafAdd10Int 6</code>), but rather the value of the function
+        itself.</p>
+
+        <p>Because the values of CAFs are always cached, it is important to be aware that CAFs
+        that evaluate to large values can significantly increase the memory requirements of your
+        program.</p>
+      <div class="footnotes"><br><hr align="left" width="100"><div class="footnote">
+            <p><sup>[<a href="#N24B62" name="ftn.N24B62">7</a>] </sup>Functions with a constrained type are not CAFs because their underlying
+            representation accepts a hidden argument that indicates what specific type they should
+            take in each given context.</p>
+          </div></div></div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s08s02.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s08.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch04.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Dynamic typing&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Chapter&nbsp;4.&nbsp;Standard Library Reference</td></tr></table></div></body></html>

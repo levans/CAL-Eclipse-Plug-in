@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Tuples</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch02s02.html" title="Values and types"><link rel="prev" href="bk03ch02s02s02.html" title="Lists"><link rel="next" href="bk03ch02s02s04.html" title="Case expressions, part 1"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Tuples</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch02s02s02.html">Prev</a>&nbsp;</td><th align="center" width="60%">Values and types</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch02s02s04.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N21A59"></a>Tuples</h3></div></div></div>
+        
+
+        <p>Tuples are ordered collections of fixed numbers of values. The most familiar kind of
+        tuple is the 2-tuple, or pair. Pairs or triples (3-tuples) are often used to model geometric
+        locations:<div class="informalexample">
+            <p><code class="code">(0.0, 0.0)</code></p>
+          </div><div class="informalexample">
+            <p><code class="code">(-13.9, 50.0, 12.5)</code></p>
+          </div></p>
+
+        <p>Although the above examples are pairs and triples whose components are all of the same
+        type (<code class="type">Double</code>), it is also valid for tuple components to be of different
+        types:<div class="informalexample">
+            <p><code class="code">("James", 27.0)</code></p>
+          </div><div class="informalexample">
+            <p><code class="code">('A', "Bob")</code></p>
+          </div></p>
+
+        <p>The type of a tuple is written as the types of each component within
+        parentheses:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t ("James", 27.0)</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(String, Double)</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;">:t (61.0, "Bob")
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Double, String)</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t </code></strong>(0.0, 0.0)
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Double, Double)</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t (-13.9, 50.0, 12.5)</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Double, Double, Double)</code>
+</span></p></div>
+          </div></p>
+
+        <p>Note that the first tuple (consisting of a <code class="type">String</code> followed by a
+        <code class="type">Double</code>) has a different type than the second tuple (consisting of a
+        <code class="type">Double</code> followed by a <code class="type">String</code>). Note also that the third example
+        (pair of <code class="type">Doubles</code>) has a different type than the fourth example (triple of
+        <code class="type">Doubles</code>). This is because, unlike lists, every member of a given tuple type
+        must have the same number of components.</p>
+
+        <p>Tuple components needn't be of simple types; they can be of any type, including other
+        tuple types:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t ("Origin", (0.0, 0.0))</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(String, (Double, Double))</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t (['a', 'b', 'c], 3.0)</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">([Char], Double)</code>
+</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t ([('a', 1.0), ('b', 2.0), ('c', 3.0)], True)</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">([(Char, Double)], Boolean)</code>
+</span></p></div>
+          </div></p>
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch02s02s02.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch02s02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch02s02s04.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Lists&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Case expressions, part 1</td></tr></table></div></body></html>

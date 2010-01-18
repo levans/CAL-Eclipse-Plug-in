@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>User-defined types</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="prev" href="bk03ch02s03s04.html" title="Lambda expressions"><link rel="next" href="bk03ch02s04s01.html" title="Case expressions, part 2"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch02s04s01.html" title="Case expressions, part 2"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">User-defined types</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch02s03s04.html">Prev</a>&nbsp;</td><th align="center" width="60%">Chapter&nbsp;2.&nbsp;Getting Started with CAL</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch02s04s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N21F5E"></a>User-defined types</h2></div></div></div>
+      
+
+      <p>In addition to its various built-in types, CAL also allows you to define your own types
+      using data definitions.<sup>[<a href="#ftn.N21F65" name="N21F65">3</a>]</sup> One such type defined in the Prelude is the <code class="type">Ordering</code> type. We can
+      write our own version:<div class="informalexample">
+          <pre class="programlisting">/**
+ * Represents an ordering relationship between two values: less 
+ * than, equal to, or greater than.
+ * 
+ * @see typeClass = Ord
+ * @see function = compare
+ */
+data public MyOrdering =
+    /**
+     * A data constructor that represents the ordering 
+     * relationship of "less than".
+     */
+    public MyLT |
+    /**
+     * A data constructor that represents the ordering 
+     * relationship of "equal to".
+     */
+    public MyEQ |
+    /**
+     * A data constructor that represents the ordering
+     * relationship of "greater than".
+     */
+    public MyGT
+    deriving Eq, Ord, Enum, Bounded, Outputable;</pre>
+        </div></p>
+
+      <p>This example defines the <code class="type">MyOrdering</code> type as being
+      <code class="modifier">public</code> (i.e., usable in other modules). The <code class="type">MyOrdering</code> type
+      contains three values, which are constructed by the data constructors
+      <code class="function">MyLT</code>, <code class="function">MyEQ</code>, and <code class="function">MyGT</code>. Note that
+      the data constructors are also declared as being <code class="modifier">public</code>. This means that
+      code in other modules will be able to use the data constructors directly to create values of
+      this type (i.e., this is not an Abstract Data Type).</p>
+
+      <p>We could use the <code class="type">MyOrdering</code> type to write functions that order geometric
+      points:<div class="informalexample">
+          <pre class="programlisting">comparePoints :: Num a =&gt; (a, a) -&gt; (a, a) -&gt; MyOrdering;
+public comparePoints point1 point2 =
+    case point1 of
+    (x1,y1) -&gt;
+        case point2 of
+        (x2,y2) -&gt;
+            if x1 &gt; x2 then
+                MyGT
+            else if x1 &lt; x2 then
+                MyLT
+            else if y1 &gt; y2 then
+                MyGT
+            else if y1 &lt; y2 then
+                MyLT
+            else
+                MyEQ;
+        ;
+    ;</pre>
+        </div></p>
+
+      <p>With <code class="function">comparePoints</code> defined as above, the following expressions can
+      be evaluated:<div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>comparePoints (1.0, 2.0) (5.0, 6.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">MyLT</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>comparePoints (1.0, 2.0) (-4.0, 1.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">MyGT</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>comparePoints (1.0, 2.0) (1.0, 1.0)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">MyGT</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>comparePoints (9.0, 9.5) (9.0, 9.5)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">MyEQ</code>
+</span></p></div>
+        </div></p>
+
+      <p>It is also possible to define types that "wrap" other types. Types of this kind have at
+      least one data constructor that accepts one or more arguments:<div class="informalexample">
+          <pre class="programlisting">data public MyMaybe a = 
+    public MyNothing | 
+    public MyJust
+        value :: a;</pre>
+        </div></p>
+
+      <p>The above defines a family of types <code class="type">MyMaybe a</code> with two data constructors:
+      <code class="function">MyNothing</code>, which is a familiar 0-argument data constructor, and
+      <code class="function">MyJust</code>, which takes a single argument, named
+      <em class="parameter"><code>value</code></em>, of type <code class="type">a</code>.</p>
+
+      <p>The Prelude defines a type of this form called <code class="type">Maybe a</code>. The return type
+      from functions that might fail is often <code class="type">Maybe Result</code> (where <code class="type">Result</code>
+      is some result type). If a database operation succeeds, for example, a function might return
+      <code class="function">Just <em class="replaceable"><code>value</code></em></code>, (where
+      <em class="replaceable"><code>value</code></em> is a value of type <code class="type">Result</code>) whereas if it fails,
+      it might return <code class="function">Nothing</code>.</p>
+
+      <p>The <code class="type">Maybe a</code> family contains types for all of the different bindings of
+      <code class="varname">a</code>:<div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t Just 50.0</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Maybe Double)</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t Just (10 :: Int)</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Maybe Int)</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t Just "ahoy"</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Maybe String)</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>:t Nothing</code></strong>
+<span class="bold-italic">outputs</span> <code class="computeroutput">(Maybe a)</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>Just 50.0</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Just 50.0</code>
+</span></p></div>
+        </div><div class="informalexample">
+          <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>Nothing</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">Ambiguous type signature in inferred type Prelude.Outputable a =&gt; a</code>
+</span></p></div>
+        </div></p>
+
+      <p>The attempt to evaluate the type of <code class="function">Nothing</code> on its own fails,
+      because that data constructor does not take enough arguments to allow the type inferencer to
+      determine the type represented by <code class="varname">a</code>. As usual, an explicit type declaration
+      can resolve the ambiguity:</p>
+
+      <div class="informalexample">
+        <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>(Nothing :: Maybe Char)</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">Nothing</code>
+</span></p></div>
+      </div>
+
+      <p>Note that we must declare the name and type of every argument that a data constructor
+      takes. Note also that when the type of a data constructor's argument is a type variable, then
+      that type variable must also appear as an argument to the type constructor:<div class="informalexample">
+          <p><pre class="programlisting">data public MyEither a b = 
+    public MyLeft     value :: a | 
+    public MyRight    value :: b;</pre></p>
+
+          <p><span class="bold-italic">compiles without error</span></p>
+        </div><div class="informalexample">
+          <p><pre class="programlisting">data public Value = 
+    public StringValue    strValue :: String |
+    public IntValue       intValue :: Int |
+    public BooleanValue   boolValue :: Boolean |
+    public DoubleValue    dblValue :: Double;
+</pre></p>
+
+          <p><span class="bold-italic">compiles without error</span></p>
+        </div></p>
+
+      <p>The declaration of <code class="function">Value</code> compiles without error even though its
+      data constructors accept arguments that are not arguments to the type constructor because none
+      of the argument types are type variables.<div class="informalexample">
+          <p><pre class="programlisting">data public Broken1 = 
+    public Simple | 
+    public BrokenWildcard    arg :: a;
+</pre><span class="bold-italic">Error:</span> <code class="computeroutput">The type variable a
+          must appear on the left-hand side of the data declaration.</code></p>
+        </div></p>
+
+      <p>The declaration of <code class="type">Broken1</code> fails because the
+      <code class="function">BrokenWildcard</code> data constructor takes an argument of type <code class="type">a</code>,
+      but the type constructor does not accept <em class="parameter"><code>a</code></em> as an
+      argument.<div class="informalexample">
+          <p><pre class="programlisting">data public Broken2 a = 
+    public BrokenLeft     value :: a | 
+    public BrokenRight    value :: b;</pre><span class="bold-italic">Error:</span>
+          <code class="computeroutput">The type variable b must appear on the left-hand side of the data
+          declaration.</code></p>
+        </div></p>
+
+      <p>The declaration of <code class="type">Broken2</code> fails because the data constructor
+      <code class="function">BrokenRight</code> takes an argument of type <code class="type">b</code>, but the type
+      constructor does not take <em class="parameter"><code>b</code></em> as an argument.</p>
+
+      
+    <div class="footnotes"><br><hr align="left" width="100"><div class="footnote">
+          <p><sup>[<a href="#N21F65" name="ftn.N21F65">3</a>] </sup>This is not the only way to define new types. See also <a href="bk03ch03s04s04s01.html#ForeignTypeDefinitions">the section called &ldquo;Foreign type definitions&rdquo;</a>.</p>
+        </div></div></div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch02s03s04.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch02s04s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Lambda expressions&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Case expressions, part 2</td></tr></table></div></body></html>

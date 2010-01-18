@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.openquark.cal.eclipse.bridge.client.example; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.openquark.cal.eclipse.bridge.client.test.ExamplePlugin
+Bundle-Localization: plugin
+Bundle-Vendor: %providerName
+Require-Bundle: 
+ org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.console,
+ org.openquark.util,
+ org.openquark.cal.runtime,
+ org.openquark.cal.platform

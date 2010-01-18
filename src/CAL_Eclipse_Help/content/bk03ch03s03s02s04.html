@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Type variables</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s03s02.html" title="Built-in types"><link rel="prev" href="bk03ch03s03s02s03.html" title="Records"><link rel="next" href="bk03ch03s03s03.html" title="Function types"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Type variables</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s03s02s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">Built-in types</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s03s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N233FA"></a>Type variables</h4></div></div></div>
+          
+
+          <p>The example algebraic types given above are extremely specific. However, it is also
+          possible to specify much more generic types through the use of a type variable. A type
+          variable is an identifier that "stands in" for a type in a type declaration. For example,
+          the type signature<div class="informalexample">
+              <p><code class="type">(a, a)</code></p>
+            </div>represents the type of a pair where the two components are of the same
+          type. Type variables are distinguished from type names by the case of their initial
+          letter. Type names always start with an upper-case letter, whereas type variables always
+          begin with a lower-case letter. It is customary to use type variables starting from the
+          letter a and moving up the alphabet as further variables are needed. (e.g. if one needs
+          three type variables for a type signature, one uses the variables <code class="varname">a</code>,
+          <code class="varname">b</code>, and <code class="varname">c</code>).</p>
+
+          <p><div class="informaltable">
+              <table border="1"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th align="left">Type signature</th><th align="left">Matches</th></tr></thead><tbody><tr><td align="left"><code class="type">[a]</code></td><td align="left">Any list of <code class="type">a</code> (for some type <code class="type">a</code>)</td></tr><tr><td align="left"><code class="type">[[a]]</code></td><td align="left">Any list of lists of <code class="type">a</code></td></tr><tr><td align="left"><code class="type">(a, b, c, d)</code></td><td align="left">Any 4-tuple, each component of which may have a different type</td></tr><tr><td align="left"><code class="type">(a, b, b)</code></td><td align="left">Any 3-tuple whose last two components must be the same type, but whose
+                    first component may be of a different type</td></tr><tr><td align="left"><code class="type">(String, a)</code></td><td align="left">Any pair whose first component is a <code class="type">String</code></td></tr></tbody></table>
+            </div></p>
+
+          <p>Note that although the type variable can represent any type, it cannot represent two
+          different types in the same type signature: So the signature <code class="type">(a, a)</code> can match
+          the type <code class="type">(Int, Int)</code> or the type <code class="type">(String, String)</code>, but never the
+          type <code class="type">(String, Int)</code>.</p>
+
+          <p>We can define the function <code class="function">appendList</code> as
+          follows:<pre class="programlisting">appendList :: [a] -&gt; [a] -&gt; [a];
+private appendList !list1 list2 =
+    case list1 of
+    []     -&gt; list2;
+    head : rest -&gt; head : appendList rest list2;
+    ;</pre></p>
+
+          <p>Note that <code class="function">appendList</code> takes two arguments of type
+          <code class="type">[a]</code>. Although <code class="type">[a]</code> can match any list type, in any given call to
+          <code class="function">appendList</code>, all instances of <code class="type">[a]</code> must match the same
+          list type:<div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>appendList ['x', 'w', 'a'] ['b', 'c']</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">['x', 'w', 'a', 'b', 'c']</code></span></p></div>
+            </div><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>appendList [[1.0, 2.0], [1.0, 3.0]] [[3.1, 3.2]]</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">[[1.0, 2.0], [1.0, 3.0], [3.1, 3.2]]</code></span></p></div>
+            </div><div class="informalexample">
+              <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>appendList [1.0, 2.0, 3.0] ['a', 'b', 'c']</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">Type Error during an application. Caused by: Type clash: 
+type constructor Prelude.Double does not match Prelude.Char.</code></span></p></div>
+            </div></p>
+
+          <p>The third expression above fails because we are attempting to pass two lists of two
+          different types (i.e., we are trying to simultaneously match <code class="type">[a]</code> to
+          <code class="type">[Double]</code> and <code class="type">[Char]</code>).</p>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s03s02s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s03s02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s03s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Records&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Function types</td></tr></table></div></body></html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Precedence and Associativity</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s02s09.html" title="Operator application"><link rel="prev" href="bk03ch03s02s09.html" title="Operator application"><link rel="next" href="bk03ch03s02s09s02.html" title="Operators for function composition (# and $)"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Precedence and Associativity</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s02s09.html">Prev</a>&nbsp;</td><th align="center" width="60%">Operator application</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s02s09s02.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N22977"></a>Precedence and Associativity</h4></div></div></div>
+          
+
+          <p>When multiple infix operators are used in an expression, ambiguity can arise about
+          the order in which they should be applied. For example, the expression<div class="informalexample">
+              <p><code class="code">1.0 + 2.0 * 2.0</code></p>
+            </div>is ambiguous in the absence of a well-defined operator precedence; it
+          can be interpreted as either <code class="code">(1.0 + 2.0) * 2.0</code>, in which case its value is
+          <code class="code">6.0</code>, or as <code class="code">1.0 + (2.0 * 2.0)</code>, in which case its value is
+          <code class="code">5.0</code>. Fortunately, there is a well-defined operator precedence that determines
+          the order in which operations are performed. Operators with higher precedence are applied
+          first. In CAL, as in standard arithmetic, the value of the above expression is
+          <code class="code">5.0</code>, since the multiplication operator (<code class="function">*</code>) has a higher precedence than the addition operator
+          (<code class="function">+</code>).</p>
+
+          <p>Arithmetic operators in CAL have the standard arithmetic precedence. There are also
+          a number of other infix operators. The complete list of operator precedence is
+          below.</p>
+
+          <p>Some elements of CAL syntax (<code class="function">::</code> for type
+          expressions, backquotes (<code class="function">``</code>) for arbitrary infix
+          functions, and <code class="function">.</code> for record and data constructor
+          field selection) are "operator-like", in that they have associativity and precedence as
+          well. The precedence table below includes these operator-like entities.</p>
+
+          <p>Operator groups higher in the list have higher precedence; operators in the same row
+          have the same precedence:<div class="informaltable">
+              <table border="1"><colgroup><col width="33%"><col width="33%"><col width="34%"></colgroup><thead><tr><th align="left">Operator (or operator-like entity)</th><th align="left">Description</th><th align="left">Associativity</th></tr></thead><tbody><tr><td align="left"><code class="function">.</code></td><td align="left">Record or data constructor field selection</td><td align="left">Left-associative</td></tr><tr><td align="left"><code class="function">`function` #</code></td><td align="left">Backquoted-function operator, function composition</td><td align="left">Left-associative (<code class="function">`function`</code>),
+                    Right-associative (<code class="function">#</code>)</td></tr><tr><td align="left"><code class="function">-</code></td><td align="left">Unary negation</td><td align="left">Non-associative</td></tr><tr><td align="left"><code class="function">* / %</code></td><td align="left">Multiplication, division, remainder</td><td align="left">Left-associative</td></tr><tr><td align="left"><code class="function">+ -</code></td><td align="left">Addition, subtraction</td><td align="left">Left-associative</td></tr><tr><td align="left"><code class="function">: ++</code></td><td align="left">List construction, list appending</td><td align="left">Right-associative</td></tr><tr><td align="left"><code class="function">&lt; &lt;= == != &gt;= &gt;</code></td><td align="left">Comparison operators</td><td align="left">Non-associative</td></tr><tr><td align="left"><code class="function">&amp;&amp;</code></td><td align="left">Boolean AND</td><td align="left">Right-associative</td></tr><tr><td align="left"><code class="function">||</code></td><td align="left">Boolean OR</td><td align="left">Right-associative</td></tr><tr><td align="left"><code class="function">$</code></td><td align="left">Function application</td><td align="left">Right-associative</td></tr><tr><td align="left"><code class="function">::</code></td><td align="left">Type signature</td><td align="left">Non-associative</td></tr></tbody></table>
+            </div></p>
+
+          <p>Operators that have the same precedence are grouped in an expression on the basis of
+          their associativity. Associativity in this context refers to whether the operators on the
+          right are evaluated first, or those on the left. For example, consider the case of
+          multiple divisions:<div class="informalexample">
+              <p><code class="code">30.0 / 20.0 / 10.0</code></p>
+            </div></p>
+
+          <p>Without using associativity, this expression is ambiguous; it can be interpreted as
+          either <code class="code">30 / (20.0 / 10.0)</code>, in which case its value is <code class="code">15.0</code>, or
+          as <code class="code">(30.0 / 20.0) / 10.0</code>, in which case its value is <code class="code">0.15</code>. The
+          first case is a right-associative grouping, whereas the second is a left-associative
+          grouping. In CAL, the division operator is left-associative, so the expression above will
+          evaluate to <code class="code">0.15</code>.</p>
+
+          <p>The precedence table above includes the associativity of each group of
+          operators.</p>
+
+          <p>Note that the backquoted-function operator and the function composition operator are
+          at the same precedence level, but they differ in associativity. This means that they
+          cannot be used together in a single infix expression. For example, expressions of the
+          forms<div class="informalexample">
+              <p><code class="code">a `b` c # d</code></p>
+            </div>and<div class="informalexample">
+              <p><code class="code">a # b `c` d</code></p>
+            </div>are syntactically invalid in CAL.</p>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s02s09.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s02s09.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s02s09s02.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Operator application&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Operators for function composition (# and $)</td></tr></table></div></body></html>

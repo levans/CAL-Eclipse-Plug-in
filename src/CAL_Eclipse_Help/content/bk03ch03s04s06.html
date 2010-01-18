@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Type instance definitions</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s04.html" title="Definitions and declarations"><link rel="prev" href="bk03ch03s04s05s01.html" title="Constrained class methods"><link rel="next" href="bk03ch03s04s06s01.html" title="Constrained type instance definitions"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch03s04s06s01.html" title="Constrained type instance definitions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Type instance definitions</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s04s05s01.html">Prev</a>&nbsp;</td><th align="center" width="60%">Definitions and declarations</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s04s06s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N23E5F"></a>Type instance definitions</h3></div></div></div>
+        
+
+        <p>Once a type class has been defined, types may be added to it by means of a type
+        instance definition. A type instance definition adds a type to a class and specifies the
+        functions that provide the required methods for the class. An instance declaration has the
+        following form: <pre class="synopsis">instance <em class="replaceable"><code>class_name</code></em> <em class="replaceable"><code>type_signature</code></em> where
+    <em class="replaceable"><code>method_name</code></em> = <em class="replaceable"><code>function_name</code></em> ;
+    [<em class="replaceable"><code>method_name</code></em> = <em class="replaceable"><code>function_name</code></em> ; ...]
+    ;</pre></p>
+
+        <p>An instance definition defines a type as being part of a type class.</p>
+
+        <p>Ex:<div class="informalexample">
+            <pre class="programlisting">public class MyEq a where
+    public myEquals :: a -&gt; a -&gt; Boolean;
+    public myNotEquals :: a -&gt; a -&gt; Boolean;
+    ;    
+equalsInt :: Int -&gt; Int -&gt; Boolean;
+private equalsInt !x !y =
+    x == y;
+notEqualsInt :: Int -&gt; Int -&gt; Boolean;
+private notEqualsInt !x !y = 
+    x != y;    
+// Int is an instance of MyEq
+instance MyEq Int where
+    myEquals = equalsInt;
+    myNotEquals = notEqualsInt;
+    ;</pre>
+          </div></p>
+
+        <p>Note that public methods (i.e., methods that may be referenced from modules other than
+        the one in which they were defined) may be bound to private functions.</p>
+
+        <p>If a method is declared in the type class to have a default implementation, then the
+        instance declaration is allowed to omit the specification of an instance-specific version of
+        the method.</p>
+
+        <p>Ex:<div class="informalexample">
+            <pre class="programlisting">public class MyEq2 a where
+    public myEquals2 :: a -&gt; a -&gt; Boolean;
+    public myNotEquals2 :: a -&gt; a -&gt; Boolean
+        default defaultNotMyEquals2;
+    ;
+
+defaultNotMyEquals2 :: MyEq2 a =&gt; a -&gt; a -&gt; Boolean;
+private defaultNotMyEquals2 !x !y = 
+    not (myEquals2 x y);
+
+equalsInt2 :: Int -&gt; Int -&gt; Boolean;
+private equalsInt2 !x !y =
+    x == y;
+
+// Int is an instance of MyEq2
+instance MyEq2 Int where
+    myEquals2 = equalsInt2;
+    ;</pre>
+          </div></p>
+
+        
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s04s05s01.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s04.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s04s06s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Constrained class methods&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Constrained type instance definitions</td></tr></table></div></body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Case expressions</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s02.html" title="Expressions"><link rel="prev" href="bk03ch03s02s10.html" title="If expressions"><link rel="next" href="bk03ch03s02s11s01.html" title="Matching lists"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch03s02s11s01.html" title="Matching lists"><link rel="subsection" href="bk03ch03s02s11s02.html" title="Matching tuples"><link rel="subsection" href="bk03ch03s02s11s03.html" title="Matching records"><link rel="subsection" href="bk03ch03s02s11s04.html" title="Matching data constructors"><link rel="subsection" href="bk03ch03s02s11s05.html" title="Matching groups of data constructors"><link rel="subsection" href="bk03ch03s02s11s06.html" title="Matching Int values"><link rel="subsection" href="bk03ch03s02s11s07.html" title="Matching Char values"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Case expressions</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s02s10.html">Prev</a>&nbsp;</td><th align="center" width="60%">Expressions</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s02s11s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N22B72"></a>Case expressions</h3></div></div></div>
+        
+
+        <p>Case expressions provide a means to select from a variety of alternative expressions
+        depending upon the value of a test expression. They are often used for extracting components
+        of compound data structures such as fields, lists, tuples, or members of algebraic
+        types.</p>
+
+        <p>A case expression consists of a specification of the expression to test followed by a
+        list of alternatives. An alternative consists of a pattern to match followed by a right
+        arrow (<code class="function">-&gt;</code>) followed by an expression whose body will
+        provide the value of the case expression if the alternative is selected. Variables in the
+        pattern are bound in the corresponding expression. <pre class="synopsis">case <em class="replaceable"><code>condition_expression</code></em> of
+<em class="replaceable"><code>pattern</code></em> -&gt; <em class="replaceable"><code>expression1</code></em> ;
+[<em class="replaceable"><code>pattern</code></em> -&gt; <em class="replaceable"><code>expression2</code></em> ; ... ]</pre></p>
+
+        <p>Ex:<div class="informalexample">
+            <pre class="programlisting">myListSubscript :: [a] -&gt; Int -&gt; a;
+public myListSubscript !list !index =
+    case list of
+    x : xs -&gt; 
+        if index == 0 then 
+            x
+        else if index &gt; 0 then 
+            myListSubscript xs (index - 1)
+        else 
+            error "negative index.";
+    [] -&gt; 
+        error "index out of bounds.";
+    ;
+</pre>
+          </div>With <code class="function">myListSubscript</code> defined as
+        above:<div class="informalexample">
+            <p><div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>myListSubscript ['a', 'q', 'b'] 0</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">'a'</code></span></p></div></p>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>myListSubscript ['a', 'q', 'b'] 2</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">'b'</code></span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>myListSubscript ['a', 'q', 'b'] 3</code></strong>
+<span class="bold-italic">Error:</span> <code class="computeroutput">index out of bounds.</code></span></p></div>
+          </div></p>
+
+        <p>Often, one doesn't care about the value of each component that a pattern matches. In
+        these situations, it is possible to use the underscore character as a wildcard identifier.
+        The following two examples are equivalent, except that the second does not make an
+        unnecessary binding of the first list element:<div class="informalexample">
+            <pre class="programlisting">length1 :: [a] -&gt; Int;
+public length1 !list =
+    let
+        lengthHelper !list !acc = 
+            case list of
+            first : rest -&gt; lengthHelper rest (acc + 1);
+            [] -&gt; acc;
+            ;
+    in
+        lengthHelper list 0;</pre>
+          </div><div class="informalexample">
+            <pre class="programlisting">length2 :: [a] -&gt; Int;
+public length2 !list =
+    let
+        lengthHelper !list !acc = 
+            case list of
+            _ : rest -&gt; lengthHelper rest (acc + 1);
+            [] -&gt; acc;
+            ;
+    in
+        lengthHelper list 0;</pre>
+          </div>So with <code class="function">length1</code> and <code class="function">length2</code>
+        defined as above:<div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>length1 ['x', 'y', 'z', 'a', 'b']</code></strong>
+<span class="bold-italic">returns</span> 5</span></p></div>
+          </div><div class="informalexample">
+            <div class="literallayout"><p><span style="white-space: pre;"><strong class="userinput"><code>length2 ['x', 'y', 'z', 'a', 'b']</code></strong>
+<span class="bold-italic">returns</span> <code class="computeroutput">5</code></span></p></div>
+          </div></p>
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s02s10.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s02s11s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">If expressions&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Matching lists</td></tr></table></div></body></html>

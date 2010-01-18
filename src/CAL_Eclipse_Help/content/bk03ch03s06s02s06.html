@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>The @see tag</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s06s02.html" title="Supported CALDoc block tags"><link rel="prev" href="bk03ch03s06s02s05.html" title="@arg argument-name argument-description"><link rel="next" href="bk03ch03s06s03.html" title="Supported CALDoc inline tags"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">The <code class="code">@see</code> tag</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s06s02s05.html">Prev</a>&nbsp;</td><th align="center" width="60%">Supported CALDoc block tags</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s06s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="N242CC"></a>The <code class="code">@see</code> tag</h4></div></div></div>
+          
+
+          <p>The purpose of the <code class="code">@see</code> tag is to indicate cross-references to other
+          CAL definitions. It can be used in any CALDoc comment, and a CALDoc comment can contain
+          more than one <code class="code">@see</code> tag.</p>
+
+          <p>A <code class="code">@see</code> block can take on one of the following six forms, depending on
+          the kind of definitions to be cross-referenced:<div class="itemizedlist"><ul type="disc"><li>
+                <pre class="synopsis">@see function = {<em class="replaceable"><code>function reference</code></em>} [, {<em class="replaceable"><code>function reference</code></em>} ...]</pre>
+              </li><li>
+                <pre class="synopsis">@see dataConstructor = {<em class="replaceable"><code>data constructor reference</code></em>} [, {<em class="replaceable"><code>data constructor reference</code></em>} ...]</pre>
+              </li><li>
+                <pre class="synopsis">@see typeConstructor = {<em class="replaceable"><code>type constructor reference</code></em>} [, {<em class="replaceable"><code>type constructor reference</code></em>} ...]</pre>
+              </li><li>
+                <pre class="synopsis">@see typeClass = {<em class="replaceable"><code>type class reference</code></em>} [, {<em class="replaceable"><code>type class reference</code></em>} ...]</pre>
+              </li><li>
+                <pre class="synopsis">@see module = {<em class="replaceable"><code>module reference</code></em>} [, {<em class="replaceable"><code>module reference</code></em>} ...]</pre>
+              </li><li>
+                <pre class="synopsis">@see {<em class="replaceable"><code>reference</code></em>} [, {<em class="replaceable"><code>reference</code></em>} ...]</pre>
+              </li></ul></div></p>
+
+          <p>In each of the above <code class="code">@see</code> block variants, a reference can either be
+          just a name (e.g. <code class="code">Eq</code> or <code class="code">Prelude.map</code>), or one that is surrounded
+          by double quotes (e.g. <code class="literal">"makeFileName"</code> or
+          <code class="literal">"Debug.Show"</code>). Double-quoted names are not checked during the
+          compilation process, while unquoted ones are checked to make sure that the definitions
+          they reference do indeed exist and are found either in the current module or in its
+          imported modules. Double-quoted names are handy for indicating cross-references to related
+          definitions in modules that are not imported by the current module.</p>
+
+          <p>In all the cases above except "<code class="code">@see module</code>", a name can either be
+          qualified or unqualified, and is treated as a reference to a top-level definition. In
+          particular, one cannot refer to local definitions in a <code class="code">@see</code> block.</p>
+
+          <p>The last <code class="code">@see</code> block variant above provides a handy, shorter syntax, one
+          which omits the <span class="emphasis"><em>context</em></span> keyword. In this variant, references of
+          different kinds (function and class method names, module names, type constructor names,
+          data constructor names, and type class names) can appear in the same block. One
+          restriction with this syntax is that <span class="emphasis"><em>unchecked</em></span>, (i.e. double-quoted)
+          references to modules, type constructors, data constructors and type classes are not
+          allowed in this kind of <code class="code">@see</code> block.</p>
+
+          <p>The names of CAL entities are often unique enough that using this shorter syntax
+          would suffice in many circumstances.</p>
+
+          <p>Also, within a <code class="code">@see</code> block, whitespace is not important - there can be
+          any amount of whitespace, or no whitespace at all, on either side of the
+          '<code class="literal">=</code>' and the '<code class="literal">,</code>' separating the references.</p>
+
+          <p>Here are some examples of <code class="code">@see</code> blocks:<div class="orderedlist"><ol type="1"><li>
+                <p>From the Prelude module: <pre class="programlisting">/**
+ * Represents an ordering relationship between two values:
+ * less than, equal to, or greater than.
+ * 
+ * @see Ord
+ * @see compare
+ */
+data public Ordering = ...</pre></p>
+              </li><li>
+                <p>A more contrived example:<pre class="programlisting">/**
+ * This is a test module that tests the compiler's CALDoc
+ * handling abilities.
+ *
+ * @see Prelude, "Cal.Collections.List.zip", Bounded, Maybe
+ * @see module = Prelude, "Cal.Collections.List", Debug
+ * @see function= Prelude.map,
+ *                "Cal.Collections.List.zipWith",id
+ * @see typeClass=Prelude.Eq, Bounded
+ * @see typeConstructor =Maybe ,"Cal.Collections.Array.Array"
+ * @see dataConstructor = Prelude.Left ,
+ *                        "Cal.Utilities.Locale.NoDecomposition"
+ */
+module CALDocTest;
+
+import Prelude using
+    function = id;
+    typeConstructor = Maybe;
+    typeClass = Bounded;
+    ;
+
+import Debug;</pre></p>
+              </li></ol></div></p>
+        </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s06s02s05.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s06s02.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s06s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%"><code class="code">@arg <em class="replaceable"><code>argument-name</code></em>
+          <em class="replaceable"><code>argument-description</code></em></code>&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Supported CALDoc inline tags</td></tr></table></div></body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Why did we create CAL instead of just using Haskell?</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="prev" href="bk02ar01s01.html" title="Summary of CAL language features"><link rel="next" href="bk02ar01s03.html" title="CAL performance"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Why did we create CAL instead of just using Haskell?</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk02ar01s01.html">Prev</a>&nbsp;</td><th align="center" width="60%">CAL for Haskell Programmers</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk02ar01s03.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="N20C87"></a>Why did we create CAL instead of just using Haskell?</h2></div></div></div>
+    
+
+    <div class="orderedlist"><ol type="a"><li>
+        <p>
+          <b>CAL is simple to use for interacting with real world
+          environments.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">CAL takes a practical approach to interacting with the real
+          world. This is one of the defining differences between CAL and
+          Haskell, and was one of the main motivators for us in implementing a
+          different language. For example, in the "History of Haskell" paper
+          by Paul Hudak et al, in section 3.2 it says that "Once we were
+          committed to a lazy language, a pure one was inescapable". Of
+          course, Haskell supports functions like unsafePerformIO, so there
+          are qualifications to this statement, but the general philosophy is
+          an emphasis on purity, and this is usually stated right at the
+          beginning as a requirement if one adopts the lazy approach.
+        </p>
+
+        <p>In contrast, CAL takes a more pragmatic approach. CAL's foreign
+        function and type API lets programmers import any Java method, field
+        or constructor as a CAL function, and any Java type as a CAL type.
+        This makes it easy and convenient to access the rich array of Java
+        libraries available with minimal effort. The drawback is that these
+        imported types may be mutable, and the imported functions may not be
+        pure. However, the imported functions and types can be made private to
+        a module and CAL wrapper functions written to make the public
+        functions actually exposed by the module pure.</p>
+
+        <p>CAL supports various mechanisms to make it easy to control
+        laziness and evaluation order in cases such as writing the wrapper
+        functions mentioned above. These are also quite useful for dealing
+        with certain classes of space leaks in a simple way. For example, CAL
+        supports seq, deepSeq, plinging of function arguments and plinging of
+        data constructor arguments. In addition, CAL has an eager function
+        primitive that tells the code generator to not create a lazy thunk for
+        an expression, but just compile strictly.</p>
+
+        <p>Any algebraic function created using algebraic CAL types and
+        non-foreign functions is pure. Impurity in the language only arises
+        via the foreign API when referring to non-immutable Java types. We
+        have found that the use of wrappers often lets us localize the
+        impurity in a simple way. One canonical example is with the function
+        <code class="function">outputListWith :: [a] -&gt; (a -&gt; JObject) -&gt;
+        JList</code>, where JObject and JList are CAL foreign types for
+        the Java types java.lang.Object and java.lang.List respectively. The
+        implementation involves calling a foreign function to create a new
+        java.util.ArrayList, and then adding elements of the CAL list to it,
+        using an element marshaling function. In particular, the created Java
+        list is mutated in the body of the function. However, due to
+        strictness annotations, this happens in a definite order, and the
+        resulting function outputListWith is pure.</p>
+
+        <p>Another technique for localizing state is through the use of
+        execution context properties. It is frequently the case that state,
+        such as the current time zone, is locally constant over a computation.
+        CAL has an execution context, into which clients can set such state
+        for the duration of an execution. Constant applicative form (CAF)
+        values are also tied to an execution context.</p>
+
+        <p>In addition, the execution context gives clients control over
+        the execution of a CAL program. For example, they can request that the
+        CAL program suspends execution.</p>
+
+        <p>Another example of the practical nature of CAL is that CAL's
+        String type is a foreign type with implementation type
+        java.lang.String and not [Char].</p>
+      </li><li>
+        <p>
+          <b>CAL is a low-risk choice for business applications.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Since CAL programs can be distributed as a collection of Java
+          JARS with no other run-time support required, CAL based applications
+          have the platform independence and security of a Java application.
+          This makes CAL based applications more acceptable in situations
+          where conservative IT policies are in place.
+        </p>
+
+        <p>In addition, standard tools and practices for working with Java
+        based applications work for CAL. For example, people are very familiar
+        with deploying JARs. Many people know how to configure and tune a JVM
+        for heap size, garbage collection characteristics etc. Tools used to
+        diagnose runtime problems, such as profilers and debuggers, work with
+        CAL.</p>
+      </li><li>
+        <p>
+          <b>Programs do not need to be entirely written, or even
+          primarily written in CAL.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">We wanted to create a language where it was possible to
+          introduce strongly typed lazy functional programming in the places
+          where it makes sense, but be able to coexist with teams that did not
+          use or know how to use this technology. We wanted to lower the
+          barrier of entry to obtaining the benefits of CAL by being able to
+          localize its use to the situations where the advantages were most
+          dramatic.
+        </p>
+      </li><li>
+        <p>
+          <b>CAL has extensive runtime language creation
+          capabilities.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">Whole CAL modules can be programmatically created, checked,
+          and compiled on the fly. Essentially all of the services of the CAL
+          compiler and runtime are accessible to the application programmer at
+          runtime in an efficient way. For example, new modules, or functions
+          can be created, checked for correctness, and executed without going
+          through slow intermediate formats (such as a source language textual
+          representation) and without creating any intermediate files on disk.
+          This is done in a fully multi-threaded way, both for compilation and
+          execution.
+        </p>
+
+        <p>One illustration of parts of this functionality is with the
+        GemCutter tool which is used for creating CAL functions (Gems) in a
+        graphical environment. The GemCutter provides rapid feedback to the
+        user as to whether a connection between functions is type correct,
+        suggests valid connections, and allows for the execution of gems in
+        such a way that unsatisfied arguments have their values prompted for
+        at run-time.</p>
+      </li><li>
+        <p>
+          <b>CAL seeks to be as comfortable as possible for mainstream
+          developers to use.&nbsp;</b>
+
+          <br xmlns:fo="http://www.w3.org/1999/XSL/Format">One of our design goals was to make CAL as simple and
+          comfortable as possible for mainstream developers to use. In
+          particular, while we wanted to make extensive use of concepts and
+          ideas from the strongly typed functional world, consistency with the
+          notation, terminology and programming style of this world was not a
+          main priority.
+        </p>
+
+        <p>For example, we wanted to use longer, more descriptive, less
+        mathematical names, as is common in Java. The Haskell functions null
+        and nub are isEmpty and removeDuplicates in CAL. The Haskell type
+        class Monoid is Appendable in CAL.</p>
+
+        <p>We wanted to use longer variable names in our code, including in
+        the standard libraries, and explain, in comments, why things were
+        implemented the way they were. Our comments follow the Java
+        conventions in syntax and in style.</p>
+      </li></ol></div>
+  </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk02ar01s01.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk02ar01.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk02ar01s03.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Summary of CAL language features&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;CAL performance</td></tr></table></div></body></html>

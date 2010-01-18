@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Algebraic types</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s03.html" title="Types"><link rel="prev" href="bk03ch03s03s03.html" title="Function types"><link rel="next" href="bk03ch03s03s04s01.html" title="Type constructors vs. data constructors"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch03s03s04s01.html" title="Type constructors vs. data constructors"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Algebraic types</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s03s03.html">Prev</a>&nbsp;</td><th align="center" width="60%">Types</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s03s04s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N23578"></a>Algebraic types</h3></div></div></div>
+        
+
+        <p>An algebraic, or parameterized, type is one that allows one or more different data
+        constructors. These data constructors may accept specified concrete types, or they may
+        accept general types (specified by type variables).</p>
+
+        <p>An algebraic type is specified by a type constructor followed by zero or more other
+        types:<pre class="synopsis"><em class="replaceable"><code>type_constructor</code></em> [<em class="replaceable"><code>type1</code></em> [<em class="replaceable"><code>type2</code></em> ...]]</pre></p>
+
+        <p>Ex: <div class="informalexample">
+            <div class="informaltable">
+              <table border="1"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th align="left">Type</th><th align="left">Possible values</th></tr></thead><tbody><tr><td align="left"><code class="type">Ordering</code></td><td align="left"><code class="function">LT</code>, <code class="function">EQ</code>, or
+                    <code class="function">GT</code></td></tr><tr><td align="left"><code class="type">Maybe String</code></td><td align="left"><code class="code">(Just <em class="replaceable"><code>string_value</code></em>)</code> or
+                    <code class="function">Nothing</code></td></tr><tr><td align="left"><code class="type">Either Int Integer</code></td><td align="left"><code class="code">(Left <em class="replaceable"><code>int_value</code></em>)</code> or <code class="code">(Right
+                    <em class="replaceable"><code>integer_value</code></em>)</code></td></tr></tbody></table>
+            </div>
+          </div></p>
+
+        <p>The last two types in the above example are subsets of the following more general
+        types:<div class="informaltable">
+            <table border="1"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th align="left">Type</th><th align="left">Possible values</th></tr></thead><tbody><tr><td align="left"><code class="type">Maybe a</code></td><td align="left"><code class="code">(Just <em class="replaceable"><code>value</code></em>)</code> for some
+                  <code class="varname"><em class="replaceable"><code>value</code></em></code>, or
+                  <code class="code">Nothing</code></td></tr><tr><td align="left"><code class="type">Either a b</code></td><td align="left"><code class="code">(Left <em class="replaceable"><code>value1</code></em>)</code> or <code class="code">(Right
+                  <em class="replaceable"><code>value2</code></em>)</code>, for some
+                  <code class="varname"><em class="replaceable"><code>value1</code></em></code> or
+                  <code class="varname"><em class="replaceable"><code>value2</code></em></code></td></tr></tbody></table>
+          </div></p>
+
+        <p>There are a number of built-in algebraic types. New ones can also be declared using a
+        data declaration.</p>
+
+        
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s03s03.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s03.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s03s04s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Function types&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;Type constructors vs. data constructors</td></tr></table></div></body></html>

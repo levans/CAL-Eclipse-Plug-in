@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Importing functions and types from other modules</title><link href="../eclipsehelp.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.71.1" name="generator"><link rel="start" href="index.html" title="CAL Development Guide"><link rel="up" href="bk03ch03s05.html" title="Modules"><link rel="prev" href="bk03ch03s05s02.html" title="Structure of a module file"><link rel="next" href="bk03ch03s05s03s01.html" title="using clauses"><link rel="preface" href="bk01pr01.html" title="Overview"><link rel="chapter" href="bk01ch01.html" title="Chapter&nbsp;1.&nbsp;Installing the CAL Eclipse Plug-in"><link rel="chapter" href="bk01ch02.html" title="Chapter&nbsp;2.&nbsp;Setting up Eclipse for CAL"><link rel="chapter" href="bk01ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial: Hello World"><link rel="chapter" href="bk01ch04.html" title="Chapter&nbsp;4.&nbsp;Using the CAL Eclipse Plug-in"><link rel="article" href="bk02ar01.html" title="CAL for Haskell Programmers"><link rel="article" href="bk02ar02.html" title="Effective CAL"><link rel="chapter" href="Overview.html" title="Chapter&nbsp;1.&nbsp;Overview"><link rel="chapter" href="bk03ch02.html" title="Chapter&nbsp;2.&nbsp;Getting Started with CAL"><link rel="chapter" href="bk03ch03.html" title="Chapter&nbsp;3.&nbsp;Language Reference"><link rel="chapter" href="bk03ch04.html" title="Chapter&nbsp;4.&nbsp;Standard Library Reference"><link rel="appendix" href="bk03apa.html" title="Appendix&nbsp;A.&nbsp;CAL source formatting conventions"><link rel="appendix" href="bk03apb.html" title="Appendix&nbsp;B.&nbsp;Suggested reading"><link rel="appendix" href="bk03apc.html" title="Appendix&nbsp;C.&nbsp;Language keywords"><link rel="subsection" href="bk03ch03s05s03s01.html" title="using clauses"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table summary="Navigation header" width="100%"><tr><th align="center" colspan="3">Importing functions and types from other modules</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="bk03ch03s05s02.html">Prev</a>&nbsp;</td><th align="center" width="60%">Modules</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="bk03ch03s05s03s01.html">Next</a></td></tr></table><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="N240A9"></a>Importing functions and types from other modules</h3></div></div></div>
+        
+
+        <p>In order to use functions defined in another module, the other module must first be
+        imported with an import declaration. Import declarations are of the following
+        form:<pre class="synopsis">import <em class="replaceable"><code>module_name</code></em> [ using 
+    <em class="replaceable"><code>using_clause</code></em> ; 
+    [ <em class="replaceable"><code>using_clause</code></em> ; ... ] ] 
+;</pre></p>
+
+        <p>Once an identifier has been imported, it can be accessed using its qualified name. A
+        qualified name is a module name followed by a period followed by an identifier name. So for
+        example <code class="code">Prelude.String</code> refers to the <code class="type">String</code> type defined in the
+        <code class="classname">Prelude</code> module.</p>
+
+        <p>Ex:<div class="informalexample">
+            <pre class="programlisting">module Example;
+import Cal.Core.Prelude;
+
+piSquare = Prelude.pi * Prelude.pi; // OK
+
+circleArea r = pi * r * r;          // !!! Won't compile (unless
+                                    //  pi is also defined in the
+                                    //  Example module)</pre>
+          </div></p>
+
+        
+      </div><div class="navfooter"><hr><table summary="Navigation footer" width="100%"><tr><td align="left" width="40%"><a accesskey="p" href="bk03ch03s05s02.html">Prev</a>&nbsp;</td><td align="center" width="20%"><a accesskey="u" href="bk03ch03s05.html">Up</a></td><td align="right" width="40%">&nbsp;<a accesskey="n" href="bk03ch03s05s03s01.html">Next</a></td></tr><tr><td valign="top" align="left" width="40%">Structure of a module file&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td><td valign="top" align="right" width="40%">&nbsp;using clauses</td></tr></table></div></body></html>
