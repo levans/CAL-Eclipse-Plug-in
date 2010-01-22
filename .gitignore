@@ -1,0 +1,9 @@
+# ignore all .class files
+*.class
+
+# ignore CAL .cmi files
+*.cmi
+
+# ignore the "bin" folder contents
+src/CAL_Eclipse_UI/bin/*
+src/CAL_Eclipse_Core/bin/*
