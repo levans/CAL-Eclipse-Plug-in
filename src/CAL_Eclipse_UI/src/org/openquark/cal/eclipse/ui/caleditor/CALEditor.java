@@ -1131,9 +1131,9 @@ public class CALEditor extends AbstractDecoratedTextEditor {
                     return null;
                 }
 
-				public Boolean getVisible(IContributionItem arg0) {
-					return null;
-				}
+                public Boolean getVisible(IContributionItem arg0) {
+                    return null;
+                }
             });
             
             Menu menu = menuMgr.createContextMenu(viewer.getTree());
