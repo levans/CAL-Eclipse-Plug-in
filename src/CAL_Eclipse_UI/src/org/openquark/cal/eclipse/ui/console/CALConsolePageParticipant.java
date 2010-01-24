@@ -84,7 +84,6 @@ public class CALConsolePageParticipant implements IConsolePageParticipant {
         IHandlerService handlerService = (IHandlerService) workbench.getAdapter(IHandlerService.class);
         
         IHandler terminateExecutionHandler = new AbstractHandler() {
-            @Override
             public Object execute(ExecutionEvent event) throws ExecutionException {
                 terminateConsoleExecutionAction.run(null);
                 return null;
